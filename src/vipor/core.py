@@ -227,11 +227,12 @@ def digits2number(
     """Convert least-significant-first arbitrary-base digits to a number."""
     if base <= 1:
         raise ValueError("base <= 1 in digits2number")
-    is_scalar = isinstance(digits, (int, float))
-    if is_scalar:
+    if isinstance(digits, (int, float)):
         values = np.asarray([digits], dtype=float)
+        is_scalar = True
     else:
         values = np.asarray(list(digits), dtype=float)
+        is_scalar = False
     if values.size and np.any(values < 0):
         raise ValueError("digit < 0 in digits2number")
     if not is_scalar and values.size and np.any(values >= base):
