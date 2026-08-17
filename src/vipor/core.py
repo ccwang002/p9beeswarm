@@ -221,14 +221,17 @@ def digits2number(
     fractional: bool = False,
 ) -> float:
     """Convert least-significant-first arbitrary-base digits to a number."""
-    if base <= 0:
-        raise ValueError("base <= 0 in digits2number")
-    if isinstance(digits, (int, float)):
+    if base <= 1:
+        raise ValueError("base <= 1 in digits2number")
+    is_scalar = isinstance(digits, (int, float))
+    if is_scalar:
         values = np.asarray([digits], dtype=float)
     else:
         values = np.asarray(list(digits), dtype=float)
     if values.size and np.any(values < 0):
         raise ValueError("digit < 0 in digits2number")
+    if not is_scalar and values.size and np.any(values >= base):
+        raise ValueError("digit >= base in digits2number")
     result = float(np.sum(values * base ** np.arange(values.size)))
     return result / base ** values.size if fractional else result
 
