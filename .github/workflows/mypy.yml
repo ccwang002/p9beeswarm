@@ -1,0 +1,76 @@
+name: Type check package
+
+on:
+  workflow_run:
+    workflows:
+      - Lint package
+      - Test package
+    types:
+      - completed
+
+permissions:
+  actions: read
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.workflow_run.head_sha }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    name: Verify lint and tests
+    if: github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    outputs:
+      ready: ${{ steps.check.outputs.ready }}
+    steps:
+      - name: Check lint and test runs
+        id: check
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+          HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          set -euo pipefail
+
+          ready=true
+          for workflow in "Lint package" "Test package"; do
+            if ! gh run list \
+              --repo "$REPOSITORY" \
+              --workflow "$workflow" \
+              --commit "$HEAD_SHA" \
+              --limit 20 \
+              --json status,conclusion \
+              --jq 'any(.[]; .status == "completed" and .conclusion == "success")' | grep -qx true; then
+              ready=false
+            fi
+          done
+
+          echo "ready=$ready" >> "$GITHUB_OUTPUT"
+
+  mypy:
+    name: Mypy
+    needs: checks
+    if: needs.checks.outputs.ready == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v10.0.1
+        with:
+          enable-cache: true
+
+      - name: Install typing dependencies
+        run: uv sync --extra test --no-install-project
+
+      - name: Run mypy
+        run: uv run --no-project mypy src/vipor tests/upstream_vipor
