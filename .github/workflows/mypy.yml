@@ -34,7 +34,7 @@ jobs:
           set -euo pipefail
 
           ready=true
-          for workflow in lint.yml tests.yml; do
+          for workflow in "Lint package" "Test package"; do
             if ! gh run list \
               --repo "$REPOSITORY" \
               --workflow "$workflow" \
