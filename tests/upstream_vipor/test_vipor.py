@@ -129,7 +129,7 @@ def r_vipor() -> Any:
     packages = pytest.importorskip("rpy2.robjects.packages")
     try:
         return packages.importr("vipor"), robjects
-    except Exception as error:
+    except packages.PackageNotInstalledError as error:
         pytest.skip(f"R vipor package is unavailable: {error}")
     return robjects
 

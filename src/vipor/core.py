@@ -57,7 +57,7 @@ def offsetX(
 
 def offsetSingleGroup(
     y: ArrayLike,
-    maxLength: int | float | None = None,
+    maxLength: float | None = None,
     method: str = "quasirandom",
     nbins: int | None = None,
     adjust: float = 1,
@@ -216,7 +216,7 @@ def number2digits(n: int, base: int = 2) -> FloatArray:
 
 
 def digits2number(
-    digits: Iterable[int | float] | int | float,
+    digits: Iterable[int | float] | float,
     base: int = 2,
     fractional: bool = False,
 ) -> float:
@@ -233,7 +233,7 @@ def digits2number(
     return result / base ** values.size if fractional else result
 
 
-def permute(vals: Sequence[T]) -> list[tuple[T, ...]] | None:
+def permute(vals: Sequence[T]) -> list[tuple[T, ...]] | None:  # noqa: UP047
     """Return all permutations of ``vals`` in vipor's recursive order."""
     if len(vals) == 0:
         return None

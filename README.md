@@ -56,6 +56,13 @@ and those tests with:
 uv run --extra test mypy src/vipor tests/upstream_vipor
 ```
 
+To enable the optional R-backed comparisons locally, install the `r-test`
+extra in an environment with R and the upstream vipor package:
+
+```sh
+uv run --extra test --extra r-test pytest tests/upstream_vipor
+```
+
 The translated ggbeeswarm README examples and their visual regression tests
 are in [tests/test_examples.py](tests/test_examples.py). To intentionally
 regenerate the checked-in baselines after a rendering change, run:

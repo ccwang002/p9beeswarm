@@ -124,7 +124,7 @@ def _resolution(values):
     unique = sorted(set(values))
     if len(unique) < 2:
         return 1.0
-    differences = [right - left for left, right in zip(unique, unique[1:])]
+    differences = [right - left for left, right in zip(unique, unique[1:])]  # noqa: RUF007
     positive = [difference for difference in differences if difference > 0]
     return min(positive, default=1.0)
 
