@@ -151,11 +151,17 @@ def _density(values: FloatArray, nbins: int, adjust: float) -> tuple[FloatArray,
     grid_size = max(512, 1 << (int(nbins - 1).bit_length()))
     grid = np.linspace(lower - 4 * bandwidth, upper + 4 * bandwidth, grid_size)
     density_grid = np.zeros(grid_size, dtype=float)
-    chunk_size = 4096
+    chunk_size = max(1, min(4096, (1 << 20) // grid_size))
+    distances = np.empty((grid_size, chunk_size), dtype=float)
     for start in range(0, n, chunk_size):
         chunk = values[start : start + chunk_size]
-        distances = (grid[:, None] - chunk[None, :]) / bandwidth
-        density_grid += np.exp(-0.5 * distances**2).sum(axis=1)
+        current_distances = distances[:, : len(chunk)]
+        np.subtract(grid[:, None], chunk[None, :], out=current_distances)
+        current_distances /= bandwidth
+        np.square(current_distances, out=current_distances)
+        current_distances *= -0.5
+        np.exp(current_distances, out=current_distances)
+        density_grid += current_distances.sum(axis=1)
     density_grid /= n * bandwidth * sqrt(2 * pi)
     result_x = np.linspace(lower, upper, nbins)
     result_y = np.interp(result_x, grid, density_grid)
