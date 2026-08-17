@@ -23,9 +23,9 @@ jobs:
       matrix:
         include:
           - python-version: "3.9"
-            test_command: uv run --extra test pytest tests/test_swarm.py
+            test_command: PYTHONPATH=src uv run --no-project pytest tests/test_swarm.py
           - python-version: "3.13"
-            test_command: uv run --extra test pytest
+            test_command: PYTHONPATH=src uv run --no-project pytest
 
     steps:
       - name: Check out repository
@@ -40,6 +40,9 @@ jobs:
         uses: astral-sh/setup-uv@v10.0.1
         with:
           enable-cache: true
+
+      - name: Install test dependencies
+        run: uv sync --extra test --no-install-project
 
       - name: Run tests
         run: ${{ matrix.test_command }}

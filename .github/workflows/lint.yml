@@ -33,5 +33,8 @@ jobs:
         with:
           enable-cache: true
 
+      - name: Install Ruff
+        run: uv sync --group lint --no-install-project
+
       - name: Run Ruff
-        run: uv run --group lint ruff check .
+        run: uv run --no-project ruff check .
