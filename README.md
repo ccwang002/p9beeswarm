@@ -36,6 +36,33 @@ The package is managed with [uv](https://docs.astral.sh/uv/):
 uv run --extra test pytest
 ```
 
+The public Python compatibility module for the upstream
+[vipor](https://github.com/sherrillmix/vipor) helpers is available as
+`vipor`. It includes `offsetX`, `offsetSingleGroup`, the Tukey distribution
+helpers, and the van der Corput utilities used by ggbeeswarm:
+
+```python
+from vipor import offsetX
+
+offsets = offsetX(values, groups, method="quasirandom")
+```
+
+Tests mirroring vipor's upstream testthat suite are kept separately in
+[tests/upstream_vipor](tests/upstream_vipor). The R-backed compatibility
+checks use `rpy2` when the R vipor package is installed. Type-check the module
+and those tests with:
+
+```sh
+uv run --extra test mypy src/vipor tests/upstream_vipor
+```
+
+To enable the optional R-backed comparisons locally, install the `r-test`
+extra in an environment with R and the upstream vipor package:
+
+```sh
+uv run --extra test --extra r-test pytest tests/upstream_vipor
+```
+
 The translated ggbeeswarm README examples and their visual regression tests
 are in [tests/test_examples.py](tests/test_examples.py). To intentionally
 regenerate the checked-in baselines after a rendering change, run:
