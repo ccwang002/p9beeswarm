@@ -140,20 +140,6 @@ def sina(values, *, width=0.4, maxwidth=1.0, random_state=None):
     return result
 
 
-def _van_der_corput(n):
-    sequence = np.empty(n, dtype=float)
-    for index in range(1, n + 1):
-        value = index
-        denominator = 1.0
-        result = 0.0
-        while value:
-            value, remainder = divmod(value, 2)
-            denominator *= 2
-            result += remainder / denominator
-        sequence[index - 1] = result
-    return sequence
-
-
 def _density_at(values, *, bandwidth=0.0):
     grid, density = _density_estimate(values, bandwidth=bandwidth, points=1024)
     return np.interp(values, grid, density)
@@ -178,28 +164,10 @@ def _density_estimate(values, *, bandwidth=0.0, points=1024):
         values.max() + 3 * kernel_width,
         max(2, points),
     )
-    distances = (grid[:, None] - values[None, :]) / kernel_width
-    density = np.exp(-0.5 * distances**2).sum(axis=1)
+    density = np.zeros(len(grid), dtype=float)
+    for start in range(0, len(values), 4096):
+        chunk = values[start : start + 4096]
+        distances = (grid[:, None] - chunk[None, :]) / kernel_width
+        density += np.exp(-0.5 * distances**2).sum(axis=1)
     maximum = density.max()
     return grid, density / maximum if maximum else np.ones(len(grid))
-
-
-def _top_bottom_sequence(values, *, frowney, bins=None):
-    """Port vipor's topBottomDistribute within empirical density bins."""
-    n = len(values)
-    if n < 2:
-        return np.full(n, 0.5)
-    if bins is None:
-        bins = np.linspace(values.min(), values.max(), max(2, int(np.ceil(n / 5))))
-    groups = np.clip(np.searchsorted(bins, values, side="right") - 1, 0, len(bins) - 1)
-    sequence = np.empty(n, dtype=float)
-    for group in range(len(bins)):
-        members = np.flatnonzero(groups == group)
-        if not len(members):
-            continue
-        ranked_values = -values[members] if frowney else values[members]
-        ranks = np.argsort(np.argsort(ranked_values, kind="stable"), kind="stable") + 1
-        ranks[ranks % 2 == 1] *= -1
-        ranks = np.argsort(np.argsort(ranks, kind="stable"), kind="stable") + 1
-        sequence[members] = (ranks - 1.0) / max(len(members) - 1, 1)
-    return sequence
