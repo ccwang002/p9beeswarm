@@ -418,7 +418,7 @@ def vpPlot(
     if y is None:
         raise TypeError("vpPlot() missing required argument: 'y'")
     values = _as_float_array(y)
-    groups = [0] * len(values) if x is None else list(x)
+    groups: list[Hashable] = [0] * len(values) if x is None else list(x)
     if len(groups) != len(values):
         raise ValueError("x and y not the same length")
     try:
