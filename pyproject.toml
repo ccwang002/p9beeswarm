@@ -15,7 +15,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-test = ["mypy>=1.13", "pytest>=7", "scikit-learn>=1.3"]
+test = ["mypy>=1.13", "pytest>=7", "pytest-cov>=6", "scikit-learn>=1.3"]
 r-test = ["rpy2>=3.5"]
 
 [dependency-groups]
