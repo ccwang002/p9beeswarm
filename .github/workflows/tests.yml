@@ -30,8 +30,8 @@ jobs:
           - python-version: "3.13"
             test_command: >-
               PYTHONPATH=src uv run --no-project pytest
-              --cov=plotnine_beeswarm --cov-report=term-missing
-              --cov-report=xml
+              --cov=plotnine_beeswarm --cov=p9beeswarm --cov=vipor --cov-report=term-missing
+              --cov-report=xml:coverage.xml
 
     steps:
       - name: Check out repository
