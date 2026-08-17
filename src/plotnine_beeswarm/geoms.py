@@ -2,13 +2,15 @@
 
 from __future__ import annotations
 
+from typing import ClassVar
+
 from plotnine.geoms.geom_point import geom_point
 
 from .swarm import beeswarm, quasirandom, sina
 
 
 class _SwarmGeom(geom_point):
-    DEFAULT_PARAMS = {
+    DEFAULT_PARAMS: ClassVar = {
         **geom_point.DEFAULT_PARAMS,
         "width": 0.4,
         "cex": 1.0,
