@@ -131,7 +131,6 @@ def r_vipor() -> Any:
         return packages.importr("vipor"), robjects
     except packages.PackageNotInstalledError as error:
         pytest.skip(f"R vipor package is unavailable: {error}")
-    return robjects
 
 
 @pytest.mark.parametrize(

@@ -150,8 +150,12 @@ def _density(values: FloatArray, nbins: int, adjust: float) -> tuple[FloatArray,
     # the requested number of points between min(x)-3*bw and max(x)+3*bw.
     grid_size = max(512, 1 << (int(nbins - 1).bit_length()))
     grid = np.linspace(lower - 4 * bandwidth, upper + 4 * bandwidth, grid_size)
-    distances = (grid[:, None] - values[None, :]) / bandwidth
-    density_grid = np.exp(-0.5 * distances**2).sum(axis=1)
+    density_grid = np.zeros(grid_size, dtype=float)
+    chunk_size = 4096
+    for start in range(0, n, chunk_size):
+        chunk = values[start : start + chunk_size]
+        distances = (grid[:, None] - chunk[None, :]) / bandwidth
+        density_grid += np.exp(-0.5 * distances**2).sum(axis=1)
     density_grid /= n * bandwidth * sqrt(2 * pi)
     result_x = np.linspace(lower, upper, nbins)
     result_y = np.interp(result_x, grid, density_grid)
