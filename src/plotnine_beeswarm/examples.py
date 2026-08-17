@@ -67,13 +67,13 @@ def readme_examples():
         (
             "quasirandom_tukey",
             _base(iris, "Species", "Sepal.Length")
-            + geom_quasirandom(method="tukey")
+            + geom_quasirandom(method="tukey", random_state=12345)
             + ggtitle("Tukey texture"),
         ),
         (
             "quasirandom_tukey_dense",
             _base(iris, "Species", "Sepal.Length")
-            + geom_quasirandom(method="tukeyDense")
+            + geom_quasirandom(method="tukeyDense", random_state=12345)
             + ggtitle("Tukey + density"),
         ),
         (

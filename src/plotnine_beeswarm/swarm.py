@@ -4,8 +4,10 @@ from __future__ import annotations
 
 import numpy as np
 
+from vipor import offsetSingleGroup
 
-def _as_array(values):
+
+def _as_array(values) -> np.ndarray:
     values = np.asarray(values, dtype=float)
     return values
 
@@ -70,59 +72,59 @@ def beeswarm(
         ]
         out[index] = valid_candidates[0] if valid_candidates else candidates[-1]
         placed.append((index, y[index], out[index]))
-    if side == 1:
+    if side == -1:
         out = np.minimum(out, 0)
-    elif side == 2:
+    elif side in (1, 2):
         out = np.maximum(out, 0)
     if corral != "none":
-        limit = corral_width / 2
+        low = (side - 1) * corral_width / 2
+        high = (side + 1) * corral_width / 2
         if corral == "gutter":
-            out = np.clip(out, -limit, limit)
+            out = np.clip(out, low, high)
         elif corral == "wrap":
-            out = ((out + limit) % (2 * limit)) - limit
+            if side == -1:
+                out = high - ((high - out) % corral_width)
+            else:
+                out = ((out - low) % corral_width) + low
         elif corral == "random":
             out = np.where(
-                np.abs(out) <= limit,
+                (out >= low) & (out <= high),
                 out,
-                rng.uniform(-limit, limit, size=out.shape),
+                rng.uniform(low, high, size=out.shape),
             )
         elif corral == "omit":
-            out[np.abs(out) > limit] = np.nan
+            out[(out < low) | (out > high)] = np.nan
     return out
 
 
 def quasirandom(
-    values, *, width=0.4, bandwidth=0.0, method="quasirandom", random_state=None
+    values,
+    *,
+    width=0.4,
+    bandwidth=0.5,
+    nbins=None,
+    method="quasirandom",
+    varwidth=False,
+    max_length=None,
+    random_state=None,
 ):
-    """Return density-scaled offsets using vipor's van der Corput method."""
+    """Return offsets using vipor's ``offsetSingleGroup`` implementation."""
     y = _as_array(values)
     out = np.full(y.shape, np.nan, dtype=float)
     valid = np.flatnonzero(np.isfinite(y))
     if not len(valid):
         return out
-    order = valid[np.argsort(y[valid], kind="stable")]
-    n = len(order)
-    if method in ("random", "pseudorandom", "jitter"):
-        sequence = np.random.default_rng(random_state).random(n)
-    elif method in ("tukey", "tukeyDense"):
-        sequence = np.linspace(0, 1, n)
-        sequence[1::2] = sequence[1::2][::-1]
-    elif method in ("smiley", "frowney"):
-        density_grid, _ = _density_estimate(
-            y[order], bandwidth=bandwidth, points=max(2, int(np.ceil(n / 5)))
+    out[valid] = (
+        offsetSingleGroup(
+            y[valid],
+            maxLength=max_length if varwidth else None,
+            method=method,
+            nbins=nbins,
+            adjust=bandwidth,
+            random_state=random_state,
         )
-        sequence = _top_bottom_sequence(
-            y[order], frowney=method == "frowney", bins=density_grid
-        )
-    else:
-        sequence = _van_der_corput(n)
-
-    if method == "tukey":
-        density = np.ones(n)
-    else:
-        density = _density_at(y[order], bandwidth=bandwidth)
-    offsets = (sequence - 0.5) * 2 * density * width
-    out[order] = offsets
+        * width
+    )
     return out
 
 
