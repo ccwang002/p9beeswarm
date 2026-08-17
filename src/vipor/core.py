@@ -414,7 +414,8 @@ def vpPlot(
         levels = sorted(set(groups), key=lambda group: cast(Any, group))
     except TypeError:
         levels = list(dict.fromkeys(groups))
-    ids = np.asarray([levels.index(group) + 1 for group in groups], dtype=float)
+    level_map = {level: index + 1 for index, level in enumerate(levels)}
+    ids = np.asarray([level_map[group] for group in groups], dtype=float)
     return ids + offsetX(values, groups, **(offsetXArgs or {}))
 
 
