@@ -1,0 +1,27 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "plotnine-beeswarm"
+version = "0.1.0"
+description = "Beeswarm, quasirandom, and sina geoms for plotnine"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+  "numpy>=1.23",
+  "pandas>=1.5",
+  "plotnine>=0.12",
+]
+
+[project.optional-dependencies]
+test = ["pytest>=7", "scikit-learn>=1.3"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/plotnine_beeswarm", "src/p9beeswarm"]
+
+[tool.hatch.build.targets.wheel.force-include]
+"src/plotnine_beeswarm/data/corral.csv" = "plotnine_beeswarm/data/corral.csv"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

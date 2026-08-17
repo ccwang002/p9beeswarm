@@ -1,0 +1,9 @@
+# Visual regression fixtures are generated from the example plots.
+tests/baseline_images/** binary linguist-generated=true
+tests/result_images/** binary linguist-generated=true
+docs/*.png binary linguist-generated=true
+
+# Local/package build outputs should not appear in source diffs or archives.
+dist/** linguist-generated=true export-ignore
+*.whl binary linguist-generated=true export-ignore
+*.tar.gz binary linguist-generated=true export-ignore
