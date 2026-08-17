@@ -150,8 +150,18 @@ def _density(values: FloatArray, nbins: int, adjust: float) -> tuple[FloatArray,
     # the requested number of points between min(x)-3*bw and max(x)+3*bw.
     grid_size = max(512, 1 << (int(nbins - 1).bit_length()))
     grid = np.linspace(lower - 4 * bandwidth, upper + 4 * bandwidth, grid_size)
-    distances = (grid[:, None] - values[None, :]) / bandwidth
-    density_grid = np.exp(-0.5 * distances**2).sum(axis=1)
+    density_grid = np.zeros(grid_size, dtype=float)
+    chunk_size = max(1, min(4096, (1 << 20) // grid_size))
+    distances = np.empty((grid_size, chunk_size), dtype=float)
+    for start in range(0, n, chunk_size):
+        chunk = values[start : start + chunk_size]
+        current_distances = distances[:, : len(chunk)]
+        np.subtract(grid[:, None], chunk[None, :], out=current_distances)
+        current_distances /= bandwidth
+        np.square(current_distances, out=current_distances)
+        current_distances *= -0.5
+        np.exp(current_distances, out=current_distances)
+        density_grid += current_distances.sum(axis=1)
     density_grid /= n * bandwidth * sqrt(2 * pi)
     result_x = np.linspace(lower, upper, nbins)
     result_y = np.interp(result_x, grid, density_grid)
@@ -223,11 +233,12 @@ def digits2number(
     """Convert least-significant-first arbitrary-base digits to a number."""
     if base <= 1:
         raise ValueError("base <= 1 in digits2number")
-    is_scalar = isinstance(digits, (int, float))
-    if is_scalar:
+    if isinstance(digits, (int, float)):
         values = np.asarray([digits], dtype=float)
+        is_scalar = True
     else:
         values = np.asarray(list(digits), dtype=float)
+        is_scalar = False
     if values.size and np.any(values < 0):
         raise ValueError("digit < 0 in digits2number")
     if not is_scalar and values.size and np.any(values >= base):
