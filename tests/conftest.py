@@ -23,7 +23,7 @@ def pytest_addoption(parser):
 def assert_plot(request):
     result_dir = request.config.getoption("--visual-result-dir")
     if result_dir is None:
-        result_dir = tempfile.mkdtemp(prefix="plotnine-beeswarm-results-")
+        result_dir = tempfile.mkdtemp(prefix="p9beeswarm-results-")
     result_dir = Path(result_dir)
 
     def compare(plot, name):
