@@ -1,11 +1,11 @@
-# plotnine-beeswarm
+# p9beeswarm
 
-`plotnine-beeswarm` provides beeswarm-style geoms for [plotnine](https://plotnine.org/), modelled after the R [ggbeeswarm](https://github.com/eclarke/ggbeeswarm) package.
+`p9beeswarm` provides beeswarm-style geoms for [plotnine](https://plotnine.org/), modelled after the R [ggbeeswarm](https://github.com/eclarke/ggbeeswarm) package.
 
 ```python
 import plotnine as p9
 from plotnine.data import penguins
-from plotnine_beeswarm import geom_quasirandom
+from p9beeswarm import geom_quasirandom
 
 penguins_plot = (
     p9.ggplot(penguins.dropna(subset=["species", "body_mass_g"]),
@@ -64,17 +64,26 @@ uv run --extra test --extra r-test pytest tests/upstream_vipor
 ```
 
 The translated ggbeeswarm README examples and their visual regression tests
-are in [tests/test_examples.py](tests/test_examples.py). To intentionally
+are in the focused `tests/test_examples_*.py` modules. To intentionally
 regenerate the checked-in baselines after a rendering change, run:
 
 ```sh
-P9BEESWARM_GENERATE_BASELINES=1 uv run --extra test pytest tests/test_examples.py
+P9BEESWARM_GENERATE_BASELINES=1 uv run --extra test pytest tests/test_examples*.py
 ```
 
 Visual test results are written to a temporary directory by default. To keep
 them for manual inspection, choose an output directory explicitly:
 
 ```sh
-uv run --extra test pytest tests/test_examples.py \
-  --visual-result-dir=/tmp/plotnine-beeswarm-results
+uv run --extra test pytest tests/test_examples*.py \
+  --visual-result-dir=/tmp/p9beeswarm-results
+```
+
+The optional R-backed `swarmx` parity and corral-data tests run automatically
+when R, `rpy2`, and the upstream `beeswarm` package are available; otherwise
+pytest skips them. Run them explicitly with:
+
+```sh
+uv run --extra test --extra r-test pytest \
+  tests/test_swarmx_oracle.py tests/test_examples_corral.py
 ```

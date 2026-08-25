@@ -29,7 +29,7 @@ jobs:
             r_tests: true
             test_command: >-
               PYTHONPATH=src uv run --no-project pytest
-              --cov=plotnine_beeswarm --cov=p9beeswarm --cov=vipor --cov-report=term-missing
+              --cov=p9beeswarm --cov=vipor --cov-report=term-missing
 
     steps:
       - name: Check out repository
@@ -48,7 +48,7 @@ jobs:
 
       - name: Install R test dependencies
         if: matrix.r_tests
-        run: Rscript -e 'install.packages("vipor", repos = "https://cloud.r-project.org")'
+        run: Rscript -e 'install.packages(c("beeswarm", "vipor"), repos = "https://cloud.r-project.org")'
 
       - name: Set up uv
         uses: astral-sh/setup-uv@v10.0.1
