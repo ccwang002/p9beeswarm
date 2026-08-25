@@ -63,6 +63,26 @@ def test_quasirandom_forwards_vipor_parameters_and_varwidth():
     np.testing.assert_allclose(actual["x"].to_numpy() - 1, expected)
 
 
+def test_quasirandom_default_width_uses_dodged_group_spacing():
+    data = pd.DataFrame(
+        {
+            "x": [1.0] * 6,
+            "y": [1.0, 2.0, 1.0, 2.0, 1.0, 2.0],
+            "group": [1, 1, 2, 2, 3, 3],
+        }
+    )
+    position = position_quasirandom(dodge_width=1)
+    result = position.compute_panel(data, None, position.setup_params(data))
+
+    # Three groups are dodged to 2/3, 1, and 4/3. Like ggbeeswarm, infer the
+    # default width from their 1/3 spacing, not the original unit spacing.
+    centers = {1: 2 / 3, 2: 1.0, 3: 4 / 3}
+    for group, center in centers.items():
+        rows = data["group"] == group
+        expected = offsetSingleGroup(data.loc[rows, "y"], adjust=0.5) * (0.4 / 3)
+        np.testing.assert_allclose(result.loc[rows, "x"] - center, expected)
+
+
 def test_geoms_use_matching_position_objects_and_build():
     for geom, position_name in (
         (geom_beeswarm(), "position_beeswarm"),
