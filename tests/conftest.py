@@ -17,6 +17,23 @@ def pytest_addoption(parser):
         default=None,
         help="Directory for visual test result images (defaults to a temp directory).",
     )
+    parser.addoption(
+        "--run-image-tests",
+        action="store_true",
+        default=False,
+        help="Run image-comparison tests.",
+    )
+
+
+def pytest_collection_modifyitems(config, items):
+    if config.getoption("--run-image-tests"):
+        return
+    skip_image_tests = pytest.mark.skip(
+        reason="image-comparison tests require --run-image-tests"
+    )
+    for item in items:
+        if "image" in item.keywords:
+            item.add_marker(skip_image_tests)
 
 
 @pytest.fixture
