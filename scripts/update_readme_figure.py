@@ -5,7 +5,7 @@ from pathlib import Path
 import plotnine as p9
 from plotnine.data import penguins
 
-from plotnine_beeswarm import geom_quasirandom
+from p9beeswarm import geom_quasirandom
 
 ROOT = Path(__file__).resolve().parents[1]
 
