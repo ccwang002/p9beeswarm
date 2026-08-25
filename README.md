@@ -20,6 +20,10 @@ penguins_plot = (
 )
 ```
 
+Rendered output:
+
+![Penguin body mass beeswarm plot](docs/penguins-beeswarm.png)
+
 The package is managed with [uv](https://docs.astral.sh/uv/):
 
 ```sh
