@@ -6,6 +6,8 @@ from plotnine import ggtitle
 from p9beeswarm import geom_quasirandom
 from tests.example_helpers import base_plot, iris_data
 
+pytestmark = pytest.mark.image
+
 
 @pytest.mark.parametrize(
     ("name", "method", "title"),
