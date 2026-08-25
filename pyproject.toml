@@ -3,7 +3,7 @@ requires = ["hatchling>=1.25"]
 build-backend = "hatchling.build"
 
 [project]
-name = "plotnine-beeswarm"
+name = "p9beeswarm"
 version = "0.1.0"
 description = "Beeswarm, quasirandom, and sina geoms for plotnine"
 readme = "README.md"
@@ -22,10 +22,7 @@ r-test = ["rpy2>=3.5"]
 lint = ["ruff>=0.16.3"]
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/plotnine_beeswarm", "src/p9beeswarm", "src/vipor"]
-
-[tool.hatch.build.targets.wheel.force-include]
-"src/plotnine_beeswarm/data/corral.csv" = "plotnine_beeswarm/data/corral.csv"
+packages = ["src/p9beeswarm", "src/vipor"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
