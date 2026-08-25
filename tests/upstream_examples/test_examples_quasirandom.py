@@ -1,7 +1,7 @@
 """README examples for the alternative quasirandom methods."""
 
 import pytest
-from example_helpers import base_plot, iris_data
+from tests.example_helpers import base_plot, iris_data
 from plotnine import ggtitle
 
 from p9beeswarm import geom_quasirandom
