@@ -20,20 +20,18 @@ penguins_plot = (
 )
 ```
 
-Rendered output:
-
-![Penguin body mass beeswarm plot](docs/penguins-beeswarm.png)
-
-Regenerate the figure with:
-
-```sh
-uv run --extra test python scripts/update_readme_figure.py
-```
-
 The package is managed with [uv](https://docs.astral.sh/uv/):
 
 ```sh
 uv run --extra test pytest
+```
+
+The [side-by-side ggbeeswarm examples](docs/ggbeeswarm-examples.qmd) recreate
+the upstream README plots with both the Python and R implementations. Render
+them with:
+
+```sh
+quarto render docs/ggbeeswarm-examples.qmd
 ```
 
 The public Python compatibility module for the upstream
@@ -61,29 +59,4 @@ extra in an environment with R and the upstream vipor package:
 
 ```sh
 uv run --extra test --extra r-test pytest tests/upstream_vipor
-```
-
-The translated ggbeeswarm README examples and their visual regression tests
-are in the focused `tests/upstream_examples/` directory. To intentionally
-regenerate the checked-in baselines after a rendering change, run:
-
-```sh
-P9BEESWARM_GENERATE_BASELINES=1 uv run --extra test pytest tests/upstream_examples
-```
-
-Visual test results are written to a temporary directory by default. To keep
-them for manual inspection, choose an output directory explicitly:
-
-```sh
-uv run --extra test pytest tests/upstream_examples \
-  --visual-result-dir=/tmp/p9beeswarm-results
-```
-
-The optional R-backed `swarmx` parity and corral-data tests run automatically
-when R, `rpy2`, and the upstream `beeswarm` package are available; otherwise
-pytest skips them. Run them explicitly with:
-
-```sh
-uv run --extra test --extra r-test pytest \
-  tests/test_swarmx_oracle.py tests/upstream_examples/test_examples_corral.py
 ```
