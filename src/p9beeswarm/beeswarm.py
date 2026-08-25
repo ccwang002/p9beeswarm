@@ -122,18 +122,25 @@ def _place_swarm(
     if not compact:
         placed_points: list[tuple[float, float]] = []
         for local_index, value in zip(order, ordered_values):
-            candidates = [0.0]
             nearby = [
                 (other_value, other_offset)
                 for other_value, other_offset in placed_points
                 if abs(value - other_value) < 1
             ]
+            high_candidates: list[float] = []
+            low_candidates: list[float] = []
             for other_value, other_offset in nearby:
                 offset = float(np.sqrt(max(0.0, 1 - (value - other_value) ** 2)))
-                if side != -1:
-                    candidates.append(other_offset + offset)
-                if side != 1:
-                    candidates.append(other_offset - offset)
+                high_candidates.append(other_offset + offset)
+                low_candidates.append(other_offset - offset)
+            # beeswarm's C implementation evaluates every positive candidate
+            # before every negative one. That ordering breaks equal-distance
+            # ties and is part of the returned point layout.
+            candidates = [0.0]
+            if side != -1:
+                candidates.extend(high_candidates)
+            if side != 1:
+                candidates.extend(low_candidates)
 
             chosen = np.inf
             for candidate in candidates:
