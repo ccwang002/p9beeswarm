@@ -10,7 +10,7 @@ already placed circle.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Union
 
 import numpy as np
 from numpy.typing import ArrayLike, NDArray
@@ -18,7 +18,7 @@ from numpy.typing import ArrayLike, NDArray
 from vipor import offsetSingleGroup
 
 FloatArray = NDArray[np.float64]
-RandomState = int | np.random.Generator | None
+RandomState = Union[int, np.random.Generator, None]  # noqa: UP007  (runtime alias; PEP 604 unsupported on py3.9)
 
 
 @dataclass(frozen=True)
