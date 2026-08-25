@@ -1,11 +1,12 @@
 """README examples for the introductory and basic quasirandom sections."""
 
 import pytest
-from .example_helpers import base_plot, iris_data, sub_mpg
 from plotnine import aes
 from plotnine.data import mpg
 
 from p9beeswarm import geom_quasirandom
+
+from .example_helpers import base_plot, iris_data, sub_mpg
 
 
 @pytest.mark.parametrize(

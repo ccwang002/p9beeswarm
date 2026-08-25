@@ -1,6 +1,10 @@
 """README examples for the basic, alternative, and priority beeswarm sections."""
 
 import pytest
+from plotnine import aes, ggtitle, scale_x_continuous, scale_y_discrete
+from plotnine.data import mpg
+
+from p9beeswarm import geom_beeswarm
 from tests.example_helpers import (
     alternative_data,
     base_plot,
@@ -8,10 +12,6 @@ from tests.example_helpers import (
     priority_data,
     sub_mpg,
 )
-from plotnine import aes, ggtitle, scale_x_continuous, scale_y_discrete
-from plotnine.data import mpg
-
-from p9beeswarm import geom_beeswarm
 
 
 @pytest.mark.parametrize(
