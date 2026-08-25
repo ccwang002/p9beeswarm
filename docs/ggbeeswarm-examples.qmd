@@ -46,8 +46,6 @@ sub_mpg <- mpg[mpg$class %in% c("midsize", "pickup", "suv"), ]
 ```{python}
 #| include: false
 
-import io
-import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import plotnine as p9
@@ -64,169 +62,358 @@ priority = pd.DataFrame({"x": np.repeat([1, 2, 3], [20, 40, 80])})
 priority["y"] = rng.normal(priority["x"], 1)
 corral_rng = np.random.default_rng(1995)
 corral = pd.DataFrame({"y": corral_rng.normal(size=1000), "id": corral_rng.choice(["G1", "G2", "G3"], 1000)})
-
-def show(plot):
-    figure = plot.draw()
-    figure.set_size_inches(7, 5)
-    buffer = io.BytesIO()
-    figure.savefig(buffer, format="png")
-    buffer.seek(0)
-    image = plt.imread(buffer)
-    height, width = image.shape[:2]
-    display_figure = plt.figure(figsize=(width / figure.dpi, height / figure.dpi), dpi=figure.dpi)
-    display_figure.figimage(image, xo=0, yo=0)
-    plt.show()
-    plt.close("all")
 ```
 
 ## Jitter and quasirandom
 
-:::: {.columns}
-::: {.column width="50%"}
-```{python}
-#| code-summary: "Python: jitter and quasirandom"
+::: {layout-ncol=2}
+```{python Python: jitter}
+#| fig-cap: "Python: jitter"
 
-show(p9.ggplot(iris, p9.aes("Species", "Sepal.Length")) + p9.geom_jitter())
-show(p9.ggplot(iris, p9.aes("Species", "Sepal.Length")) + geom_quasirandom(random_state=12345))
+(p9.ggplot(iris, p9.aes("Species", "Sepal.Length")) + p9.geom_jitter()).show()
 ```
-:::
-::: {.column width="50%"}
-```{r}
-#| code-summary: "R: jitter and quasirandom"
+```{r R: jitter}
+#| fig-cap: "R: jitter"
 
 print(ggplot(iris, aes(Species, Sepal.Length)) + geom_jitter())
+```
+```{python Python: quasirandom}
+#| fig-cap: "Python: quasirandom"
+
+(p9.ggplot(iris, p9.aes("Species", "Sepal.Length")) + geom_quasirandom(random_state=12345)).show()
+```
+```{r R: quasirandom}
+#| fig-cap: "R: quasirandom"
+
 print(ggplot(iris, aes(Species, Sepal.Length)) + geom_quasirandom())
 ```
 :::
-::::
 
 ## geom_quasirandom
 
 ### Basic usage
 
-:::: {.columns}
-::: {.column width="50%"}
-```{python}
-#| code-summary: "Python: geom_quasirandom basic usage"
+::: {layout-ncol=2}
+```{python Python: basic geom_quasirandom}
+#| fig-cap: "Python: basic geom_quasirandom"
 
-show(p9.ggplot(mpg, p9.aes("class", "hwy")) + geom_quasirandom(random_state=12345))
-show(p9.ggplot(mpg, p9.aes("hwy", "class")) + geom_quasirandom(group_on_x=False, random_state=12345))
-show(p9.ggplot(mpg, p9.aes("class", "hwy")) + geom_quasirandom(varwidth=True, random_state=12345))
-show(p9.ggplot(sub_mpg, p9.aes("class", "displ", color="factor(cyl)")) + geom_quasirandom(dodge_width=1, random_state=12345))
+(p9.ggplot(mpg, p9.aes("class", "hwy")) + geom_quasirandom(random_state=12345)).show()
 ```
-:::
-::: {.column width="50%"}
-```{r}
-#| code-summary: "R: geom_quasirandom basic usage"
+```{r R: basic geom_quasirandom}
+#| fig-cap: "R: basic geom_quasirandom"
 
 print(ggplot(mpg, aes(class, hwy)) + geom_quasirandom())
+```
+```{python Python: horizontal geom_quasirandom}
+#| fig-cap: "Python: horizontal geom_quasirandom"
+
+(p9.ggplot(mpg, p9.aes("hwy", "class")) + geom_quasirandom(group_on_x=False, random_state=12345)).show()
+```
+```{r R: horizontal geom_quasirandom}
+#| fig-cap: "R: horizontal geom_quasirandom"
+
 print(ggplot(mpg, aes(hwy, class)) + geom_quasirandom(groupOnX = FALSE))
+```
+```{python Python: varwidth geom_quasirandom}
+#| fig-cap: "Python: varwidth geom_quasirandom"
+
+(p9.ggplot(mpg, p9.aes("class", "hwy")) + geom_quasirandom(varwidth=True, random_state=12345)).show()
+```
+```{r R: varwidth geom_quasirandom}
+#| fig-cap: "R: varwidth geom_quasirandom"
+
 print(ggplot(mpg, aes(class, hwy)) + geom_quasirandom(varwidth = TRUE))
+```
+```{python Python: dodged geom_quasirandom}
+#| fig-cap: "Python: dodged geom_quasirandom"
+
+(p9.ggplot(sub_mpg, p9.aes("class", "displ", color="factor(cyl)")) + geom_quasirandom(dodge_width=1, random_state=12345)).show()
+```
+```{r R: dodged geom_quasirandom}
+#| fig-cap: "R: dodged geom_quasirandom"
+
 print(ggplot(sub_mpg, aes(class, displ, color = factor(cyl))) + geom_quasirandom(dodge.width = 1))
 ```
 :::
-::::
 
 ### Alternative methods
 
-:::: {.columns}
-::: {.column width="50%"}
-```{python}
-#| code-summary: "Python: geom_quasirandom alternative methods"
+::: {layout-ncol=2}
+```{python Python: Tukey texture}
+#| fig-cap: "Python: Tukey texture"
 
-for method, title in [("tukey", "Tukey texture"), ("tukeyDense", "Tukey + density"), ("frowney", "Banded frowns"), ("smiley", "Banded smiles"), ("pseudorandom", "Jittered density")]:
-    show(p9.ggplot(iris, p9.aes("Species", "Sepal.Length")) + geom_quasirandom(method=method, random_state=12345) + p9.ggtitle(title))
+(p9.ggplot(iris, p9.aes("Species", "Sepal.Length")) + geom_quasirandom(method="tukey", random_state=12345) + p9.ggtitle("Tukey texture")).show()
+```
+```{r R: Tukey texture}
+#| fig-cap: "R: Tukey texture"
+
+print(ggplot(iris, aes(Species, Sepal.Length)) + geom_quasirandom(method = "tukey") + ggtitle("tukey"))
+```
+```{python Python: Tukey density}
+#| fig-cap: "Python: Tukey density"
+
+(p9.ggplot(iris, p9.aes("Species", "Sepal.Length")) + geom_quasirandom(method="tukeyDense", random_state=12345) + p9.ggtitle("Tukey + density")).show()
+```
+```{r R: Tukey density}
+#| fig-cap: "R: Tukey density"
+
+print(ggplot(iris, aes(Species, Sepal.Length)) + geom_quasirandom(method = "tukeyDense") + ggtitle("tukeyDense"))
+```
+```{python Python: frowney quasirandom}
+#| fig-cap: "Python: frowney quasirandom"
+
+(p9.ggplot(iris, p9.aes("Species", "Sepal.Length")) + geom_quasirandom(method="frowney", random_state=12345) + p9.ggtitle("Banded frowns")).show()
+```
+```{r R: frowney quasirandom}
+#| fig-cap: "R: frowney quasirandom"
+
+print(ggplot(iris, aes(Species, Sepal.Length)) + geom_quasirandom(method = "frowney") + ggtitle("frowney"))
+```
+```{python Python: smiley quasirandom}
+#| fig-cap: "Python: smiley quasirandom"
+
+(p9.ggplot(iris, p9.aes("Species", "Sepal.Length")) + geom_quasirandom(method="smiley", random_state=12345) + p9.ggtitle("Banded smiles")).show()
+```
+```{r R: smiley quasirandom}
+#| fig-cap: "R: smiley quasirandom"
+
+print(ggplot(iris, aes(Species, Sepal.Length)) + geom_quasirandom(method = "smiley") + ggtitle("smiley"))
+```
+```{python Python: pseudorandom quasirandom}
+#| fig-cap: "Python: pseudorandom quasirandom"
+
+(p9.ggplot(iris, p9.aes("Species", "Sepal.Length")) + geom_quasirandom(method="pseudorandom", random_state=12345) + p9.ggtitle("Jittered density")).show()
+```
+```{r R: pseudorandom quasirandom}
+#| fig-cap: "R: pseudorandom quasirandom"
+
+print(ggplot(iris, aes(Species, Sepal.Length)) + geom_quasirandom(method = "pseudorandom") + ggtitle("pseudorandom"))
 ```
 :::
-::: {.column width="50%"}
-```{r}
-#| code-summary: "R: geom_quasirandom alternative methods"
-
-for (method in c("tukey", "tukeyDense", "frowney", "smiley", "pseudorandom")) {
-  print(ggplot(iris, aes(Species, Sepal.Length)) + geom_quasirandom(method = method) + ggtitle(method))
-}
-```
-:::
-::::
 
 ## geom_beeswarm
 
 ### Basic usage
 
-:::: {.columns}
-::: {.column width="50%"}
-```{python}
-#| code-summary: "Python: geom_beeswarm basic usage"
+::: {layout-ncol=2}
+```{python Python: basic geom_beeswarm}
+#| fig-cap: "Python: basic geom_beeswarm"
 
-show(p9.ggplot(iris, p9.aes("Species", "Sepal.Length")) + geom_beeswarm())
-show(p9.ggplot(iris, p9.aes("Species", "Sepal.Length")) + geom_beeswarm(side=1))
-show(p9.ggplot(mpg, p9.aes("class", "hwy")) + geom_beeswarm(size=0.5))
-show(p9.ggplot(mpg, p9.aes("hwy", "class")) + geom_beeswarm(size=0.5))
-show(p9.ggplot(mpg, p9.aes("hwy", "class")) + geom_beeswarm(size=0.5) + p9.scale_y_discrete(expand=(0, 0, .5, 1)))
-show(p9.ggplot(mpg, p9.aes("class", "hwy")) + geom_beeswarm(size=1.1))
-show(p9.ggplot(sub_mpg, p9.aes("class", "displ", color="factor(cyl)")) + geom_beeswarm(dodge_width=.5))
+(p9.ggplot(iris, p9.aes("Species", "Sepal.Length")) + geom_beeswarm()).show()
 ```
-:::
-::: {.column width="50%"}
-```{r}
-#| code-summary: "R: geom_beeswarm basic usage"
+```{r R: basic geom_beeswarm}
+#| fig-cap: "R: basic geom_beeswarm"
 
 print(ggplot(iris, aes(Species, Sepal.Length)) + geom_beeswarm())
+```
+```{python Python: one-sided geom_beeswarm}
+#| fig-cap: "Python: one-sided geom_beeswarm"
+
+(p9.ggplot(iris, p9.aes("Species", "Sepal.Length")) + geom_beeswarm(side=1)).show()
+```
+```{r R: one-sided geom_beeswarm}
+#| fig-cap: "R: one-sided geom_beeswarm"
+
 print(ggplot(iris, aes(Species, Sepal.Length)) + geom_beeswarm(side = 1L))
+```
+```{python Python: compact vertical geom_beeswarm}
+#| fig-cap: "Python: compact vertical geom_beeswarm"
+
+(p9.ggplot(mpg, p9.aes("class", "hwy")) + geom_beeswarm(size=0.5)).show()
+```
+```{r R: compact vertical geom_beeswarm}
+#| fig-cap: "R: compact vertical geom_beeswarm"
+
 print(ggplot(mpg, aes(class, hwy)) + geom_beeswarm(size = .5))
+```
+```{python Python: compact horizontal geom_beeswarm}
+#| fig-cap: "Python: compact horizontal geom_beeswarm"
+
+(p9.ggplot(mpg, p9.aes("hwy", "class")) + geom_beeswarm(size=0.5)).show()
+```
+```{r R: compact horizontal geom_beeswarm}
+#| fig-cap: "R: compact horizontal geom_beeswarm"
+
 print(ggplot(mpg, aes(hwy, class)) + geom_beeswarm(size = .5))
+```
+```{python Python: expanded horizontal geom_beeswarm}
+#| fig-cap: "Python: expanded horizontal geom_beeswarm"
+
+(p9.ggplot(mpg, p9.aes("hwy", "class")) + geom_beeswarm(size=0.5) + p9.scale_y_discrete(expand=(0, 0, .5, 1))).show()
+```
+```{r R: expanded horizontal geom_beeswarm}
+#| fig-cap: "R: expanded horizontal geom_beeswarm"
+
 print(ggplot(mpg, aes(hwy, class)) + geom_beeswarm(size = .5) + scale_y_discrete(expand = expansion(add = c(.5, 1))))
+```
+```{python Python: large-point geom_beeswarm}
+#| fig-cap: "Python: large-point geom_beeswarm"
+
+(p9.ggplot(mpg, p9.aes("class", "hwy")) + geom_beeswarm(size=1.1)).show()
+```
+```{r R: large-point geom_beeswarm}
+#| fig-cap: "R: large-point geom_beeswarm"
+
 print(ggplot(mpg, aes(class, hwy)) + geom_beeswarm(size = 1.1))
+```
+```{python Python: dodged geom_beeswarm}
+#| fig-cap: "Python: dodged geom_beeswarm"
+
+(p9.ggplot(sub_mpg, p9.aes("class", "displ", color="factor(cyl)")) + geom_beeswarm(dodge_width=.5)).show()
+```
+```{r R: dodged geom_beeswarm}
+#| fig-cap: "R: dodged geom_beeswarm"
+
 print(ggplot(sub_mpg, aes(class, displ, color = factor(cyl))) + geom_beeswarm(dodge.width = .5))
 ```
 :::
-::::
 
 ### Alternative methods and priority
 
-:::: {.columns}
-::: {.column width="50%"}
-```{python}
-#| code-summary: "Python: geom_beeswarm methods and priority"
+::: {layout-ncol=2}
+```{python Python: swarm method}
+#| fig-cap: "Python: swarm method"
 
-for method in ["swarm", "compactswarm", "hex", "square", "center"]:
-    show(p9.ggplot(alternative, p9.aes("x", "y")) + geom_beeswarm(cex=2.5, method=method) + p9.ggtitle(f'method = "{method}"'))
-for priority_name in ["ascending", "descending", "density", "random"]:
-    show(p9.ggplot(priority, p9.aes("x", "y")) + geom_beeswarm(cex=2, priority=priority_name, random_state=12345) + p9.ggtitle(priority_name.title()) + p9.scale_x_continuous(expand=(0, 0, .5, .5)))
+(p9.ggplot(alternative, p9.aes("x", "y")) + geom_beeswarm(cex=2.5, method="swarm") + p9.ggtitle('method = "swarm"')).show()
+```
+```{r R: swarm method}
+#| fig-cap: "R: swarm method"
+
+print(ggplot(alternative, aes(x, y)) + geom_beeswarm(cex = 2.5, method = "swarm") + ggtitle("swarm"))
+```
+```{python Python: compactswarm method}
+#| fig-cap: "Python: compactswarm method"
+
+(p9.ggplot(alternative, p9.aes("x", "y")) + geom_beeswarm(cex=2.5, method="compactswarm") + p9.ggtitle('method = "compactswarm"')).show()
+```
+```{r R: compactswarm method}
+#| fig-cap: "R: compactswarm method"
+
+print(ggplot(alternative, aes(x, y)) + geom_beeswarm(cex = 2.5, method = "compactswarm") + ggtitle("compactswarm"))
+```
+```{python Python: hex method}
+#| fig-cap: "Python: hex method"
+
+(p9.ggplot(alternative, p9.aes("x", "y")) + geom_beeswarm(cex=2.5, method="hex") + p9.ggtitle('method = "hex"')).show()
+```
+```{r R: hex method}
+#| fig-cap: "R: hex method"
+
+print(ggplot(alternative, aes(x, y)) + geom_beeswarm(cex = 2.5, method = "hex") + ggtitle("hex"))
+```
+```{python Python: square method}
+#| fig-cap: "Python: square method"
+
+(p9.ggplot(alternative, p9.aes("x", "y")) + geom_beeswarm(cex=2.5, method="square") + p9.ggtitle('method = "square"')).show()
+```
+```{r R: square method}
+#| fig-cap: "R: square method"
+
+print(ggplot(alternative, aes(x, y)) + geom_beeswarm(cex = 2.5, method = "square") + ggtitle("square"))
+```
+```{python Python: center method}
+#| fig-cap: "Python: center method"
+
+(p9.ggplot(alternative, p9.aes("x", "y")) + geom_beeswarm(cex=2.5, method="center") + p9.ggtitle('method = "center"')).show()
+```
+```{r R: center method}
+#| fig-cap: "R: center method"
+
+print(ggplot(alternative, aes(x, y)) + geom_beeswarm(cex = 2.5, method = "center") + ggtitle("center"))
+```
+```{python Python: ascending priority}
+#| fig-cap: "Python: ascending priority"
+
+(p9.ggplot(priority, p9.aes("x", "y")) + geom_beeswarm(cex=2, priority="ascending", random_state=12345) + p9.ggtitle("Ascending") + p9.scale_x_continuous(expand=(0, 0, .5, .5))).show()
+```
+```{r R: ascending priority}
+#| fig-cap: "R: ascending priority"
+
+print(ggplot(priority, aes(x, y)) + geom_beeswarm(cex = 2, priority = "ascending") + ggtitle("ascending") + scale_x_continuous(expand = expansion(add = c(.5, .5))))
+```
+```{python Python: descending priority}
+#| fig-cap: "Python: descending priority"
+
+(p9.ggplot(priority, p9.aes("x", "y")) + geom_beeswarm(cex=2, priority="descending", random_state=12345) + p9.ggtitle("Descending") + p9.scale_x_continuous(expand=(0, 0, .5, .5))).show()
+```
+```{r R: descending priority}
+#| fig-cap: "R: descending priority"
+
+print(ggplot(priority, aes(x, y)) + geom_beeswarm(cex = 2, priority = "descending") + ggtitle("descending") + scale_x_continuous(expand = expansion(add = c(.5, .5))))
+```
+```{python Python: density priority}
+#| fig-cap: "Python: density priority"
+
+(p9.ggplot(priority, p9.aes("x", "y")) + geom_beeswarm(cex=2, priority="density", random_state=12345) + p9.ggtitle("Density") + p9.scale_x_continuous(expand=(0, 0, .5, .5))).show()
+```
+```{r R: density priority}
+#| fig-cap: "R: density priority"
+
+print(ggplot(priority, aes(x, y)) + geom_beeswarm(cex = 2, priority = "density") + ggtitle("density") + scale_x_continuous(expand = expansion(add = c(.5, .5))))
+```
+```{python Python: random priority}
+#| fig-cap: "Python: random priority"
+
+(p9.ggplot(priority, p9.aes("x", "y")) + geom_beeswarm(cex=2, priority="random", random_state=12345) + p9.ggtitle("Random") + p9.scale_x_continuous(expand=(0, 0, .5, .5))).show()
+```
+```{r R: random priority}
+#| fig-cap: "R: random priority"
+
+print(ggplot(priority, aes(x, y)) + geom_beeswarm(cex = 2, priority = "random") + ggtitle("random") + scale_x_continuous(expand = expansion(add = c(.5, .5))))
 ```
 :::
-::: {.column width="50%"}
-```{r}
-#| code-summary: "R: geom_beeswarm methods and priority"
-
-for (method in c("swarm", "compactswarm", "hex", "square", "center")) {
-  print(ggplot(alternative, aes(x, y)) + geom_beeswarm(cex = 2.5, method = method) + ggtitle(method))
-}
-for (priority_name in c("ascending", "descending", "density", "random")) {
-  print(ggplot(priority, aes(x, y)) + geom_beeswarm(cex = 2, priority = priority_name) + ggtitle(priority_name) + scale_x_continuous(expand = expansion(add = c(.5, .5))))
-}
-```
-:::
-::::
 
 ### Corral runaway points
 
-:::: {.columns}
-::: {.column width="50%"}
-```{python}
-#| code-summary: "Python: geom_beeswarm corralling"
+::: {layout-ncol=2}
+```{python Python: no corralling}
+#| fig-cap: "Python: no corralling"
 
-for corral_name in ["none", "gutter", "wrap", "random", "omit"]:
-    show(p9.ggplot(corral, p9.aes("id", "y", color="id")) + geom_beeswarm(cex=2.5, corral=corral_name, corral_width=.9, random_state=1995) + p9.ggtitle(f'corral = "{corral_name}"'))
+(p9.ggplot(corral, p9.aes("id", "y", color="id")) + geom_beeswarm(cex=2.5, corral="none", corral_width=.9, random_state=1995) + p9.ggtitle('corral = "none"')).show()
+```
+```{r R: no corralling}
+#| fig-cap: "R: no corralling"
+
+print(ggplot(corral, aes(id, y, colour = id)) + geom_beeswarm(cex = 2.5, corral = "none", corral.width = .9) + ggtitle("none"))
+```
+```{python Python: gutter corralling}
+#| fig-cap: "Python: gutter corralling"
+
+(p9.ggplot(corral, p9.aes("id", "y", color="id")) + geom_beeswarm(cex=2.5, corral="gutter", corral_width=.9, random_state=1995) + p9.ggtitle('corral = "gutter"')).show()
+```
+```{r R: gutter corralling}
+#| fig-cap: "R: gutter corralling"
+
+print(ggplot(corral, aes(id, y, colour = id)) + geom_beeswarm(cex = 2.5, corral = "gutter", corral.width = .9) + ggtitle("gutter"))
+```
+```{python Python: wrapped corralling}
+#| fig-cap: "Python: wrapped corralling"
+
+(p9.ggplot(corral, p9.aes("id", "y", color="id")) + geom_beeswarm(cex=2.5, corral="wrap", corral_width=.9, random_state=1995) + p9.ggtitle('corral = "wrap"')).show()
+```
+```{r R: wrapped corralling}
+#| fig-cap: "R: wrapped corralling"
+
+print(ggplot(corral, aes(id, y, colour = id)) + geom_beeswarm(cex = 2.5, corral = "wrap", corral.width = .9) + ggtitle("wrap"))
+```
+```{python Python: random corralling}
+#| fig-cap: "Python: random corralling"
+
+(p9.ggplot(corral, p9.aes("id", "y", color="id")) + geom_beeswarm(cex=2.5, corral="random", corral_width=.9, random_state=1995) + p9.ggtitle('corral = "random"')).show()
+```
+```{r R: random corralling}
+#| fig-cap: "R: random corralling"
+
+print(ggplot(corral, aes(id, y, colour = id)) + geom_beeswarm(cex = 2.5, corral = "random", corral.width = .9) + ggtitle("random"))
+```
+```{python Python: omitted corralling}
+#| fig-cap: "Python: omitted corralling"
+
+(p9.ggplot(corral, p9.aes("id", "y", color="id")) + geom_beeswarm(cex=2.5, corral="omit", corral_width=.9, random_state=1995) + p9.ggtitle('corral = "omit"')).show()
+```
+```{r R: omitted corralling}
+#| fig-cap: "R: omitted corralling"
+
+print(ggplot(corral, aes(id, y, colour = id)) + geom_beeswarm(cex = 2.5, corral = "omit", corral.width = .9) + ggtitle("omit"))
 ```
 :::
-::: {.column width="50%"}
-```{r}
-#| code-summary: "R: geom_beeswarm corralling"
-
-for (corral_name in c("none", "gutter", "wrap", "random", "omit")) {
-  print(ggplot(corral, aes(id, y, colour = id)) + geom_beeswarm(cex = 2.5, corral = corral_name, corral.width = .9) + ggtitle(corral_name))
-}
-```
-:::
-::::
