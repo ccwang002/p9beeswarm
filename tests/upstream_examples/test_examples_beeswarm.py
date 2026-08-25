@@ -13,6 +13,8 @@ from tests.example_helpers import (
     sub_mpg,
 )
 
+pytestmark = pytest.mark.image
+
 
 @pytest.mark.parametrize(
     ("name", "plot"),

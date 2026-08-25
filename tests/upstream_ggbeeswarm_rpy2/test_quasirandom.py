@@ -55,10 +55,7 @@ def _assert_matches_vipor(
             varwidth=varwidth,
         ),
         expected,
-        # The Python KDE is an approximation of R's FFT-backed density()
-        # calculation. The observed error remains below 0.08% without an
-        # absolute-error allowance that could mask a relative regression.
-        rtol=8e-4,
+        rtol=1e-12,
         atol=1e-12,
     )
 

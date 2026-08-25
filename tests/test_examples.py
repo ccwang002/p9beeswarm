@@ -8,6 +8,8 @@ from p9beeswarm import geom_quasirandom
 
 from .example_helpers import base_plot, iris_data, sub_mpg
 
+pytestmark = pytest.mark.image
+
 
 @pytest.mark.parametrize(
     ("name", "plot"),

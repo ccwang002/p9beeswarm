@@ -130,7 +130,7 @@ def offsetSingleGroup(
 
 
 def _density(values: FloatArray, nbins: int, adjust: float) -> tuple[FloatArray, FloatArray]:
-    """Approximate ``stats::density(..., kernel='gaussian')`` without R."""
+    """Return R ``stats::density(..., kernel='gaussian')``-compatible KDE."""
     if adjust <= 0:
         raise ValueError("adjust must be positive")
     n = values.size
@@ -138,31 +138,39 @@ def _density(values: FloatArray, nbins: int, adjust: float) -> tuple[FloatArray,
     interquartile_range = float(np.percentile(values, 75) - np.percentile(values, 25))
     scale = min(standard_deviation, interquartile_range / 1.34)
     if not isfinite(scale) or scale <= 0:
-        scale = standard_deviation if standard_deviation > 0 else 1.0
+        scale = standard_deviation if standard_deviation > 0 else abs(float(values[0]))
+    if scale <= 0:
+        scale = 1.0
     bandwidth = 0.9 * scale * n ** (-0.2) * adjust
     lower = float(values.min() - 3 * bandwidth)
     upper = float(values.max() + 3 * bandwidth)
-    if lower == upper:
-        lower -= 0.5
-        upper += 0.5
 
-    # R rounds density's internal FFT grid up to a power of two, then returns
-    # the requested number of points between min(x)-3*bw and max(x)+3*bw.
+    # R's density() bins observations onto an internal grid, then convolves
+    # that mass with a sampled kernel using a circular FFT.
     grid_size = max(512, 1 << (int(nbins - 1).bit_length()))
-    grid = np.linspace(lower - 4 * bandwidth, upper + 4 * bandwidth, grid_size)
-    density_grid = np.zeros(grid_size, dtype=float)
-    chunk_size = max(1, min(4096, (1 << 20) // grid_size))
-    distances = np.empty((grid_size, chunk_size), dtype=float)
-    for start in range(0, n, chunk_size):
-        chunk = values[start : start + chunk_size]
-        current_distances = distances[:, : len(chunk)]
-        np.subtract(grid[:, None], chunk[None, :], out=current_distances)
-        current_distances /= bandwidth
-        np.square(current_distances, out=current_distances)
-        current_distances *= -0.5
-        np.exp(current_distances, out=current_distances)
-        density_grid += current_distances.sum(axis=1)
-    density_grid /= n * bandwidth * sqrt(2 * pi)
+    internal_lower = lower - 4 * bandwidth
+    internal_upper = upper + 4 * bandwidth
+    grid_step = (internal_upper - internal_lower) / (grid_size - 1)
+
+    mass = np.zeros(2 * grid_size, dtype=float)
+    positions = (values - internal_lower) / grid_step
+    indices = np.floor(positions).astype(int)
+    fractions = positions - indices
+    np.add.at(mass, indices, (1 - fractions) / n)
+    np.add.at(mass, indices + 1, fractions / n)
+
+    positive_lags = np.arange(grid_size + 1, dtype=float) * grid_step
+    negative_lags = -np.arange(grid_size - 1, 0, -1, dtype=float) * grid_step
+    lags = np.concatenate((positive_lags, negative_lags))
+    kernel = np.exp(-0.5 * (lags / bandwidth) ** 2) / (bandwidth * sqrt(2 * pi))
+    density_grid = np.maximum(
+        0,
+        np.fft.ifft(np.fft.fft(mass) * np.conj(np.fft.fft(kernel))).real[
+            :grid_size
+        ],
+    )
+
+    grid = np.linspace(internal_lower, internal_upper, grid_size)
     result_x = np.linspace(lower, upper, nbins)
     result_y = np.interp(result_x, grid, density_grid)
     maximum = float(result_y.max())
