@@ -135,7 +135,12 @@ def _position_swarm(
     if max_length is None:
         max_length = inferred_max_length
 
+    # ggbeeswarm derives the default width after collision/dodging.  The
+    # distance between dodged group centers, rather than the original
+    # categorical spacing, is the scale of the quasirandom offsets.
     width = params["width"]
+    if width is None:
+        width = 0.4 * _resolution(result[swarm_axis].to_numpy(dtype=float))
     rng = _random_generator(params.get("random_state"))
     for _, group in result.groupby(grouping, sort=False, observed=True, dropna=False):
         indices = group.index
@@ -180,14 +185,7 @@ class _SwarmPosition(position):
     algorithm: ClassVar[str] = "quasirandom"
 
     def setup_params(self, data: pd.DataFrame) -> dict[str, Any]:
-        params = deepcopy(self.params)
-        x_is_discrete = _orientation(data, params)
-        axis = "x" if x_is_discrete else "y"
-        if params.get("width") is None:
-            params["width"] = 0.4 * _resolution(
-                pd.to_numeric(data[axis], errors="coerce").to_numpy()
-            )
-        return params
+        return deepcopy(self.params)
 
     @classmethod
     def compute_panel(cls, data, scales, params):
