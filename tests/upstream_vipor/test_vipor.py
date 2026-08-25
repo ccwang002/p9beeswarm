@@ -15,6 +15,7 @@ from vipor import (
     vanDerCorput,
     vpPlot,
 )
+from vipor.core import _density
 
 
 def test_offseting() -> None:
@@ -158,3 +159,28 @@ def test_offsets_match_upstream_r(
     np.testing.assert_allclose(
         actual, expected, rtol=1e-4, atol=1e-4
     )
+
+
+@pytest.mark.parametrize(
+    ("values", "nbins", "adjust"),
+    [
+        ([1.2, 1.4, 1.4, 2.1, 3.7, 5.2], 2, 0.5),
+        ([1.2, 1.4, 1.4, 2.1, 3.7, 5.2], 32, 1),
+        ([1.2, 1.4, 1.4, 2.1, 3.7, 5.2], 513, 2),
+        ([0, 0, 0, 0], 1024, 1),
+        ([5, 5, 5, 5], 1024, 0.5),
+    ],
+)
+def test_density_matches_r_fft_kde(
+    r_vipor: Any, values: list[float], nbins: int, adjust: float
+) -> None:
+    _, robjects = r_vipor
+    expected = robjects.r["density"](
+        robjects.FloatVector(values), n=nbins, adjust=adjust, kernel="gaussian"
+    )
+    expected_x = np.asarray(expected.rx2("x"), dtype=float)
+    expected_y = np.asarray(expected.rx2("y"), dtype=float)
+    expected_y /= expected_y.max()
+    actual_x, actual_y = _density(np.asarray(values, dtype=float), nbins, adjust)
+    np.testing.assert_allclose(actual_x, expected_x, rtol=1e-12, atol=1e-12)
+    np.testing.assert_allclose(actual_y, expected_y, rtol=1e-12, atol=1e-12)

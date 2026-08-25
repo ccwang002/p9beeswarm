@@ -7,6 +7,8 @@ from plotnine import aes, ggplot, ggtitle
 
 from p9beeswarm import geom_beeswarm
 
+pytestmark = pytest.mark.image
+
 
 @pytest.fixture(scope="module")
 def corral_data():

@@ -26,3 +26,4 @@ packages = ["src/p9beeswarm", "src/vipor"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+markers = ["image: rendered image-comparison test (skipped by default)"]
