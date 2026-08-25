@@ -1,7 +1,7 @@
 """README examples for the basic, alternative, and priority beeswarm sections."""
 
 import pytest
-from example_helpers import (
+from tests.example_helpers import (
     alternative_data,
     base_plot,
     iris_data,

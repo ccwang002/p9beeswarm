@@ -64,18 +64,18 @@ uv run --extra test --extra r-test pytest tests/upstream_vipor
 ```
 
 The translated ggbeeswarm README examples and their visual regression tests
-are in the focused `tests/test_examples_*.py` modules. To intentionally
+are in the focused `tests/upstream_examples/` directory. To intentionally
 regenerate the checked-in baselines after a rendering change, run:
 
 ```sh
-P9BEESWARM_GENERATE_BASELINES=1 uv run --extra test pytest tests/test_examples*.py
+P9BEESWARM_GENERATE_BASELINES=1 uv run --extra test pytest tests/upstream_examples
 ```
 
 Visual test results are written to a temporary directory by default. To keep
 them for manual inspection, choose an output directory explicitly:
 
 ```sh
-uv run --extra test pytest tests/test_examples*.py \
+uv run --extra test pytest tests/upstream_examples \
   --visual-result-dir=/tmp/p9beeswarm-results
 ```
 
@@ -85,5 +85,5 @@ pytest skips them. Run them explicitly with:
 
 ```sh
 uv run --extra test --extra r-test pytest \
-  tests/test_swarmx_oracle.py tests/test_examples_corral.py
+  tests/test_swarmx_oracle.py tests/upstream_examples/test_examples_corral.py
 ```
