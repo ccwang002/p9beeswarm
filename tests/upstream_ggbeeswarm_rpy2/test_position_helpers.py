@@ -38,14 +38,14 @@ def test_get_range_matches_ggbeeswarm(
     robjects = r_ggbeeswarm_helpers
     if scale_kind == "discrete":
         r_limits = robjects.StrVector(limits)
-        r_scale = robjects.r["ggplot2::scale_x_discrete"](limits=r_limits)
+        r_scale = robjects.r("ggplot2::scale_x_discrete")(limits=r_limits)
         python_scale = scale_x_discrete(limits=limits)
     else:
         r_limits = robjects.FloatVector(limits)
-        r_scale = robjects.r["ggplot2::scale_x_continuous"](limits=r_limits)
+        r_scale = robjects.r("ggplot2::scale_x_continuous")(limits=r_limits)
         python_scale = scale_x_continuous(limits=limits)
 
-    expected = float(robjects.r["ggbeeswarm:::get_range"](r_scale)[0])
+    expected = float(robjects.r("ggbeeswarm:::get_range")(r_scale)[0])
     assert get_range(python_scale) == expected
 
 
@@ -57,7 +57,7 @@ def test_determine_pos_matches_ggbeeswarm(
     values = np.array([1, 1, 1, 2, 2, 2], dtype=float)
     robjects = r_ggbeeswarm_helpers
     expected = np.asarray(
-        robjects.r["ggbeeswarm:::determine_pos"](
+        robjects.r("ggbeeswarm:::determine_pos")(
             robjects.FloatVector(values.tolist()),
             method=robjects.StrVector([method]),
             side=side,
