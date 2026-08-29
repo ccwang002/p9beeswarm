@@ -15,9 +15,11 @@ from p9beeswarm import quasirandom
 @pytest.fixture(scope="module")
 def r_vipor() -> tuple[Any, Any]:
     try:
-        from rpy2 import robjects
-        from rpy2.robjects import packages
-        from rpy2.robjects.packages import PackageNotInstalledError
+        from rpy2 import robjects  # type: ignore[import-not-found]
+        from rpy2.robjects import packages  # type: ignore[import-not-found]
+        from rpy2.robjects.packages import (  # type: ignore[import-not-found]
+            PackageNotInstalledError,
+        )
     except (ImportError, RuntimeError) as error:
         pytest.skip(f"R and rpy2 are unavailable: {error}")
     try:
@@ -73,7 +75,8 @@ def test_readme_quasirandom_deterministic_methods(
 ) -> None:
     from sklearn.datasets import load_iris
 
-    values = load_iris().data[:, 0]
+    dataset: Any = load_iris()
+    values = dataset.data[:, 0]
     _assert_matches_vipor(r_vipor, values, method=method)
 
 
@@ -90,7 +93,8 @@ def test_readme_quasirandom_varwidth(r_vipor: tuple[Any, Any]) -> None:
 def test_readme_quasirandom_stochastic_methods_produce_point_locations(method: str) -> None:
     from sklearn.datasets import load_iris
 
-    values = load_iris().data[:, 0]
+    dataset: Any = load_iris()
+    values = dataset.data[:, 0]
     offsets = quasirandom(values, width=0.4, method=method, random_state=12345)
     assert offsets.shape == values.shape
     assert np.all(np.isfinite(offsets))

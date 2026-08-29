@@ -57,7 +57,7 @@ def _dodge(data: pd.DataFrame, axis: str, width: float) -> pd.DataFrame:
     for axis_value, category in data.groupby(
         axis, sort=False, observed=True, dropna=False
     ):
-        groups = list(pd.unique(category["group"]))
+        groups: list[Any] = list(pd.unique(category["group"]))
         if len(groups) < 2:
             continue
         try:
@@ -67,8 +67,9 @@ def _dodge(data: pd.DataFrame, axis: str, width: float) -> pd.DataFrame:
             # preferable to failing for a user-supplied object column.
             groups.sort(key=str)
         step = width / len(groups)
+        axis_center = cast(float, axis_value)
         centers = {
-            group: axis_value - width / 2 + step / 2 + index * step
+            group: axis_center - width / 2 + step / 2 + index * step
             for index, group in enumerate(groups)
         }
         for group, center in centers.items():
@@ -82,7 +83,7 @@ def _is_dodgeable(data: pd.DataFrame, dodge_width: float | None) -> bool:
     if dodge_width is None or "group" not in data:
         return False
     groups = data["group"]
-    return groups.nunique(dropna=False) > 1 and groups.duplicated().any()
+    return bool(groups.nunique(dropna=False) > 1 and groups.duplicated().any())
 
 
 def _orientation(data: pd.DataFrame, params: dict[str, Any]) -> bool:
@@ -115,12 +116,13 @@ def get_range(scale: Any) -> float:
     unique limits. Explicit limits take precedence over trained values, and a
     zero-length range is normalized to one.
     """
+    result: float
     if isinstance(scale, scale_discrete):
-        limits = scale.final_limits
-        result = len(pd.unique(np.asarray(limits, dtype=object)))
+        discrete_limits: Any = scale.final_limits
+        result = float(len(pd.unique(np.asarray(discrete_limits, dtype=object))))
     elif isinstance(scale, scale_continuous):
-        limits = scale.final_limits
-        result = abs(float(limits[1]) - float(limits[0]))
+        continuous_limits: Any = scale.final_limits
+        result = abs(float(continuous_limits[1]) - float(continuous_limits[0]))
     else:
         raise TypeError(f"unknown position scale type: {type(scale).__name__}")
     return float(result) if result else 1.0
