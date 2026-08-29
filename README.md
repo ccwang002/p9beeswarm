@@ -59,6 +59,19 @@ assert that the Python results match numerically:
 uv run --extra test --extra r-test pytest
 ```
 
+The R dependencies are pinned in [`renv.lock`](renv.lock) and restored by the
+GitHub Actions workflow with `r-lib/actions/setup-renv`. To update the pinned
+versions, run these commands from the repository root:
+
+```sh
+Rscript -e 'if (!requireNamespace("renv", quietly = TRUE)) install.packages("renv", repos = "https://cloud.r-project.org")'
+Rscript -e 'renv::restore(prompt = FALSE)'
+Rscript -e 'renv::update(c("beeswarm", "vipor", "ggbeeswarm", "ggplot2"), prompt = FALSE)'
+Rscript -e 'renv::snapshot(prompt = FALSE)'
+```
+
+Review the resulting `renv.lock` diff, run the upstream comparison tests, and
+commit the updated lockfile along with any dependency changes.
 
 ### Type checking
 
