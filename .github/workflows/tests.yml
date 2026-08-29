@@ -24,7 +24,9 @@ jobs:
         include:
           - python-version: "3.9"
             r_tests: false
-            test_command: PYTHONPATH=src uv run --no-project pytest tests/test_swarm.py
+            test_command: >-
+              PYTHONPATH=src uv run --no-project pytest
+              --cov=p9beeswarm --cov=vipor --cov-report=term-missing
           - python-version: "3.13"
             r_tests: true
             test_command: >-
