@@ -14,6 +14,8 @@ from typing import Any, ClassVar, cast
 import numpy as np
 import pandas as pd  # type: ignore[import-untyped]
 from plotnine.positions.position import position
+from plotnine.scales.scale_continuous import scale_continuous
+from plotnine.scales.scale_discrete import scale_discrete
 
 from .beeswarm import beeswarm, quasirandom, sina
 
@@ -105,10 +107,59 @@ def _random_generator(random_state: Any) -> Any:
     return np.random.default_rng(random_state)
 
 
+def get_range(scale: Any) -> float:
+    """Return a position scale's upstream-compatible range.
+
+    This mirrors ggbeeswarm's ``get_range`` helper: continuous scales use the
+    difference between their limits, while discrete scales use the number of
+    unique limits. Explicit limits take precedence over trained values, and a
+    zero-length range is normalized to one.
+    """
+    if isinstance(scale, scale_discrete):
+        limits = scale.final_limits
+        result = len(pd.unique(np.asarray(limits, dtype=object)))
+    elif isinstance(scale, scale_continuous):
+        limits = scale.final_limits
+        result = abs(float(limits[1]) - float(limits[0]))
+    else:
+        raise TypeError(f"unknown position scale type: {type(scale).__name__}")
+    return float(result) if result else 1.0
+
+
+def _data_range(values: pd.Series) -> float:
+    """Provide the position-scale range when called outside plotnine's build."""
+    finite = values.to_numpy(dtype=float)
+    finite = finite[np.isfinite(finite)]
+    if finite.size == 0:
+        return 1.0
+    span = float(np.ptp(finite))
+    return span if span else 1.0
+
+
+def _beeswarm_sizes(
+    data: pd.DataFrame,
+    params: dict[str, Any],
+    swarm_axis: str,
+    value_axis: str,
+    scales: Any,
+) -> tuple[float, float]:
+    """Match ggbeeswarm's one-hundredth-of-scale collision circle sizes."""
+    if scales is None:
+        swarm_range = _data_range(data[swarm_axis])
+        value_range = _data_range(data[value_axis])
+    else:
+        swarm_range = get_range(getattr(scales, swarm_axis))
+        value_range = get_range(getattr(scales, value_axis))
+    width = params["width"]
+    x_size = float(width) if width is not None else swarm_range / 100
+    return x_size, value_range / 100
+
+
 def _position_swarm(
     data: pd.DataFrame,
     params: dict[str, Any],
     algorithm: str,
+    scales: Any,
 ) -> pd.DataFrame:
     """Shared panel pipeline for all swarm positions."""
     if data.empty:
@@ -135,12 +186,16 @@ def _position_swarm(
     if max_length is None:
         max_length = inferred_max_length
 
-    # ggbeeswarm derives the default width after collision/dodging.  The
-    # distance between dodged group centers, rather than the original
-    # categorical spacing, is the scale of the quasirandom offsets.
     width = params["width"]
-    if width is None:
+    if algorithm != "beeswarm" and width is None:
+        # ggbeeswarm derives the default width after collision/dodging. The
+        # distance between dodged group centers, rather than the original
+        # categorical spacing, is the scale of quasirandom offsets.
         width = 0.4 * _resolution(result[swarm_axis].to_numpy(dtype=float))
+    if algorithm == "beeswarm":
+        x_size, y_size = _beeswarm_sizes(
+            result, params, swarm_axis, value_axis, scales
+        )
     rng = _random_generator(params.get("random_state"))
     for _, group in result.groupby(grouping, sort=False, observed=True, dropna=False):
         indices = group.index
@@ -156,6 +211,8 @@ def _position_swarm(
                 corral=params["corral"],
                 corral_width=params["corral_width"],
                 random_state=rng,
+                x_size=x_size,
+                y_size=y_size,
             )
         elif algorithm == "sina":
             offsets = sina(
@@ -189,7 +246,7 @@ class _SwarmPosition(position):
 
     @classmethod
     def compute_panel(cls, data, scales, params):
-        return _position_swarm(data, params, cls.algorithm)
+        return _position_swarm(data, params, cls.algorithm, scales)
 
 
 class position_beeswarm(_SwarmPosition):
@@ -199,9 +256,9 @@ class position_beeswarm(_SwarmPosition):
 
     def __init__(
         self,
-        width: float | None = 0.4,
+        width: float | None = None,
         cex: float = 1.0,
-        method: str = "compactswarm",
+        method: str = "swarm",
         priority: str = "ascending",
         dodge_width: float | None = None,
         group_on_x: bool | None = None,

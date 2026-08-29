@@ -301,6 +301,42 @@ def swarmx(
     return SwarmResult(result_x, y_values)
 
 
+def determine_pos(values: ArrayLike, method: str, side: int) -> FloatArray:
+    """Apply ggbeeswarm's within-row ``determine_pos`` layout rules."""
+    if side not in (-1, 0, 1):
+        raise ValueError("side must be -1, 0, or 1")
+    rows = _vector(values)
+    result = np.full(rows.size, np.nan, dtype=float)
+    finite = np.flatnonzero(np.isfinite(rows))
+    for row in np.unique(rows[finite]):
+        members = finite[rows[finite] == row]
+        positions = np.arange(1, members.size + 1, dtype=float)
+        if method in {"center", "centre", "square"}:
+            if side == -1:
+                positions -= positions[-1]
+            elif side == 1:
+                positions -= 1
+            elif method in {"center", "centre"}:
+                positions -= positions.mean()
+            else:
+                positions -= np.floor(positions.mean())
+        elif method == "hex":
+            odd_row = int(row) % 2 == 1
+            if side == 0:
+                if odd_row:
+                    positions -= np.floor(positions.mean()) + 0.25
+                else:
+                    positions -= np.ceil(positions.mean()) - 0.25
+            elif side == -1:
+                positions -= positions[-1] + (0 if odd_row else 0.5)
+            else:
+                positions -= 1 if odd_row else 0.5
+        else:
+            raise ValueError("method must be center, centre, square, or hex")
+        result[members] = positions
+    return result
+
+
 def _grid_offsets(
     values: FloatArray,
     *,
@@ -325,47 +361,17 @@ def _grid_offsets(
     else:
         step = max(width, np.finfo(float).eps)
         bins = np.floor((values[finite] - minimum) / step).astype(int)
-    for row in np.unique(bins):
-        members = np.flatnonzero(bins == row)
-        positions = np.arange(1, members.size + 1, dtype=float)
-        if method in {"center", "centre"}:
-            if side == -1:
-                positions -= members.size
-            elif side == 1:
-                positions -= 1
-            else:
-                positions -= positions.mean()
-        elif method == "square":
-            if side == -1:
-                positions -= members.size
-            elif side == 1:
-                positions -= 1
-            else:
-                positions -= np.floor(positions.mean())
-        else:  # hex
-            # R's ``cut`` labels rows from one, whereas our bins start at
-            # zero; the first row is therefore the odd row.
-            odd = bool((row + 1) % 2)
-            if side == -1:
-                positions -= members.size
-                if not odd:
-                    positions -= 0.5
-            elif side == 1:
-                positions -= 1
-                if not odd:
-                    positions -= 0.5
-            elif odd:
-                positions -= np.floor(positions.mean()) + 0.25
-            else:
-                positions -= np.ceil(positions.mean()) - 0.25
-        result[finite[members]] = positions * x_size * cex
+    offsets = determine_pos(bins + 1, method, side)
+    result[finite] = offsets * x_size * cex
     return result
 
 
 def beeswarm(
     values: ArrayLike,
     *,
-    width: float = 0.4,
+    width: float | None = 0.4,
+    x_size: float | None = None,
+    y_size: float | None = None,
     cex: float = 1.0,
     method: str = "swarm",
     priority: str = "ascending",
@@ -374,17 +380,28 @@ def beeswarm(
     corral_width: float = 0.9,
     random_state: RandomState = None,
 ) -> FloatArray:
-    """Compatibility wrapper returning offsets for one group of values."""
+    """Compatibility wrapper returning offsets for one group of values.
+
+    ``x_size`` and ``y_size`` override the inferred collision-circle diameters.
+    Positions use them to match ggbeeswarm's panel-scale sizing.
+    """
     values_array = _vector(values)
     if side not in (-1, 0, 1):
         raise ValueError("side must be -1, 0, or 1")
-    if not np.isfinite(width) or width <= 0:
-        raise ValueError("width must be positive")
+    if x_size is None:
+        if width is None or not np.isfinite(width) or width <= 0:
+            raise ValueError("width must be positive")
+        x_size = float(width)
+    elif not np.isfinite(x_size) or x_size <= 0:
+        raise ValueError("x_size must be positive")
     if not np.isfinite(cex) or cex <= 0:
         raise ValueError("cex must be positive")
     finite_values = values_array[np.isfinite(values_array)]
     data_span = float(np.ptp(finite_values)) if finite_values.size else 0.0
-    y_size = max(data_span, 1.0) / 100
+    if y_size is None:
+        y_size = max(data_span, 1.0) / 100
+    elif not np.isfinite(y_size) or y_size <= 0:
+        raise ValueError("y_size must be positive")
     if method == "compactswarm":
         compact = True
     elif method == "swarm":
@@ -393,7 +410,7 @@ def beeswarm(
         offsets = _grid_offsets(
             values_array,
             method=method,
-            x_size=float(width),
+            x_size=x_size,
             y_size=y_size,
             cex=float(cex),
             side=side,
@@ -410,7 +427,7 @@ def beeswarm(
     return swarmx(
         np.zeros(values_array.size),
         values_array,
-        x_size=float(width),
+        x_size=x_size,
         y_size=y_size,
         cex=cex,
         side=side,
