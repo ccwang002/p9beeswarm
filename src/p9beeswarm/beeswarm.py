@@ -301,6 +301,42 @@ def swarmx(
     return SwarmResult(result_x, y_values)
 
 
+def determine_pos(values: ArrayLike, method: str, side: int) -> FloatArray:
+    """Apply ggbeeswarm's within-row ``determine_pos`` layout rules."""
+    if side not in (-1, 0, 1):
+        raise ValueError("side must be -1, 0, or 1")
+    rows = _vector(values)
+    result = np.full(rows.size, np.nan, dtype=float)
+    finite = np.flatnonzero(np.isfinite(rows))
+    for row in np.unique(rows[finite]):
+        members = finite[rows[finite] == row]
+        positions = np.arange(1, members.size + 1, dtype=float)
+        if method in {"center", "centre", "square"}:
+            if side == -1:
+                positions -= positions[-1]
+            elif side == 1:
+                positions -= 1
+            elif method in {"center", "centre"}:
+                positions -= positions.mean()
+            else:
+                positions -= np.floor(positions.mean())
+        elif method == "hex":
+            odd_row = int(row) % 2 == 1
+            if side == 0:
+                if odd_row:
+                    positions -= np.floor(positions.mean()) + 0.25
+                else:
+                    positions -= np.ceil(positions.mean()) - 0.25
+            elif side == -1:
+                positions -= positions[-1] + (0 if odd_row else 0.5)
+            else:
+                positions -= 1 if odd_row else 0.5
+        else:
+            raise ValueError("method must be center, centre, square, or hex")
+        result[members] = positions
+    return result
+
+
 def _grid_offsets(
     values: FloatArray,
     *,
@@ -325,40 +361,8 @@ def _grid_offsets(
     else:
         step = max(width, np.finfo(float).eps)
         bins = np.floor((values[finite] - minimum) / step).astype(int)
-    for row in np.unique(bins):
-        members = np.flatnonzero(bins == row)
-        positions = np.arange(1, members.size + 1, dtype=float)
-        if method in {"center", "centre"}:
-            if side == -1:
-                positions -= members.size
-            elif side == 1:
-                positions -= 1
-            else:
-                positions -= positions.mean()
-        elif method == "square":
-            if side == -1:
-                positions -= members.size
-            elif side == 1:
-                positions -= 1
-            else:
-                positions -= np.floor(positions.mean())
-        else:  # hex
-            # R's ``cut`` labels rows from one, whereas our bins start at
-            # zero; the first row is therefore the odd row.
-            odd = bool((row + 1) % 2)
-            if side == -1:
-                positions -= members.size
-                if not odd:
-                    positions -= 0.5
-            elif side == 1:
-                positions -= 1
-                if not odd:
-                    positions -= 0.5
-            elif odd:
-                positions -= np.floor(positions.mean()) + 0.25
-            else:
-                positions -= np.ceil(positions.mean()) - 0.25
-        result[finite[members]] = positions * x_size * cex
+    offsets = determine_pos(bins + 1, method, side)
+    result[finite] = offsets * x_size * cex
     return result
 
 
