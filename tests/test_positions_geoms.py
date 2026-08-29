@@ -1,3 +1,5 @@
+from typing import Any
+
 import numpy as np
 import pandas as pd
 from plotnine import aes, ggplot
@@ -73,7 +75,7 @@ def test_beeswarm_forwards_algorithm_method():
 
 
 def test_beeswarm_default_uses_panel_scale_sizes_for_documented_iris_example():
-    dataset = load_iris()
+    dataset: Any = load_iris()
     iris = pd.DataFrame(
         dataset.data,
         columns=["Sepal.Length", "Sepal.Width", "Petal.Length", "Petal.Width"],

@@ -9,9 +9,11 @@ import pytest
 @pytest.fixture(scope="module")
 def r_beeswarm():
     try:
-        from rpy2 import robjects
-        from rpy2.robjects import packages
-        from rpy2.robjects.packages import PackageNotInstalledError
+        from rpy2 import robjects  # type: ignore[import-not-found]
+        from rpy2.robjects import packages  # type: ignore[import-not-found]
+        from rpy2.robjects.packages import (  # type: ignore[import-not-found]
+            PackageNotInstalledError,
+        )
     except (ImportError, RuntimeError) as error:
         pytest.skip(f"R and rpy2 are unavailable: {error}")
     try:
