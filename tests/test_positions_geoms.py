@@ -1,9 +1,12 @@
 import numpy as np
 import pandas as pd
 from plotnine import aes, ggplot
+from plotnine.scales import scale_x_continuous, scale_x_discrete, scale_y_continuous
+from sklearn.datasets import load_iris
 
+from p9beeswarm.beeswarm import determine_pos, swarmx
 from p9beeswarm.geoms import geom_beeswarm, geom_quasirandom, geom_sina
-from p9beeswarm.positions import position_beeswarm, position_quasirandom
+from p9beeswarm.positions import get_range, position_beeswarm, position_quasirandom
 from vipor import offsetSingleGroup
 
 
@@ -15,6 +18,25 @@ def _data():
             "group": [1, 1, 2, 2, 1, 2],
         }
     )
+
+
+def test_get_range_matches_upstream_scale_rules():
+    discrete = scale_x_discrete(limits=["a", "b", "a"])
+    continuous = scale_y_continuous(limits=(2, 8))
+    zero = scale_x_continuous(limits=(5, 5))
+
+    assert get_range(discrete) == 2
+    assert get_range(continuous) == 6
+    assert get_range(zero) == 1
+
+
+def test_determine_pos_matches_upstream_layout_rules():
+    rows = np.array([1, 1, 1, 2, 2, 2])
+    np.testing.assert_allclose(determine_pos(rows, "center", 0), [-1, 0, 1, -1, 0, 1])
+    np.testing.assert_allclose(determine_pos(rows, "square", 0), [-1, 0, 1, -1, 0, 1])
+    np.testing.assert_allclose(determine_pos(rows, "hex", 0), [-1.25, -0.25, 0.75, -0.75, 0.25, 1.25])
+    np.testing.assert_allclose(determine_pos(rows, "square", -1), [-2, -1, 0, -2, -1, 0])
+    np.testing.assert_allclose(determine_pos(rows, "hex", 1), [0, 1, 2, 0.5, 1.5, 2.5])
 
 
 def test_positions_share_orientation_and_preserve_missing_values():
@@ -48,6 +70,30 @@ def test_beeswarm_forwards_algorithm_method():
     data = pd.DataFrame({"x": 1, "y": [0.0, 0.0, 0.0]})
     result = position.compute_panel(data, None, position.setup_params(data))
     assert result["x"].nunique() > 1
+
+
+def test_beeswarm_default_uses_panel_scale_sizes_for_documented_iris_example():
+    dataset = load_iris()
+    iris = pd.DataFrame(
+        dataset.data,
+        columns=["Sepal.Length", "Sepal.Width", "Petal.Length", "Petal.Width"],
+    ).assign(Species=[dataset.target_names[index] for index in dataset.target])
+
+    plot = ggplot(iris, aes("Species", "Sepal.Length")) + geom_beeswarm()
+    plot._build()
+    result = plot.layers[0].data
+
+    expected = np.empty(len(iris))
+    for center, (_, group) in enumerate(iris.groupby("Species", sort=True), start=1):
+        expected[group.index] = center + swarmx(
+            0,
+            group["Sepal.Length"],
+            x_size=get_range(plot.layout.panel_params[0].x.scale) / 100,
+            y_size=get_range(plot.layout.panel_params[0].y.scale) / 100,
+        ).x
+
+    assert plot.layers[0].position.params["method"] == "swarm"
+    np.testing.assert_allclose(result["x"], expected)
 
 
 def test_quasirandom_forwards_vipor_parameters_and_varwidth():
