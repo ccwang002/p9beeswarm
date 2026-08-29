@@ -216,23 +216,23 @@ print(ggplot(iris, aes(Species, Sepal.Length)) + geom_beeswarm())
 
 print(ggplot(iris, aes(Species, Sepal.Length)) + geom_beeswarm(side = 1L))
 ```
-```{python Python: compact vertical geom_beeswarm}
-#| fig-cap: "Python: compact vertical geom_beeswarm"
+```{python Python: vertical geom_beeswarm}
+#| fig-cap: "Python: vertical geom_beeswarm"
 
 (p9.ggplot(mpg, p9.aes("class", "hwy")) + geom_beeswarm(size=0.5)).show()
 ```
-```{r R: compact vertical geom_beeswarm}
-#| fig-cap: "R: compact vertical geom_beeswarm"
+```{r R: vertical geom_beeswarm}
+#| fig-cap: "R: vertical geom_beeswarm"
 
 print(ggplot(mpg, aes(class, hwy)) + geom_beeswarm(size = .5))
 ```
-```{python Python: compact horizontal geom_beeswarm}
-#| fig-cap: "Python: compact horizontal geom_beeswarm"
+```{python Python: horizontal geom_beeswarm}
+#| fig-cap: "Python: horizontal geom_beeswarm"
 
 (p9.ggplot(mpg, p9.aes("hwy", "class")) + geom_beeswarm(size=0.5)).show()
 ```
-```{r R: compact horizontal geom_beeswarm}
-#| fig-cap: "R: compact horizontal geom_beeswarm"
+```{r R: horizontal geom_beeswarm}
+#| fig-cap: "R: horizontal geom_beeswarm"
 
 print(ggplot(mpg, aes(hwy, class)) + geom_beeswarm(size = .5))
 ```

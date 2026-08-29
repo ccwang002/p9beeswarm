@@ -365,7 +365,9 @@ def _grid_offsets(
 def beeswarm(
     values: ArrayLike,
     *,
-    width: float = 0.4,
+    width: float | None = 0.4,
+    x_size: float | None = None,
+    y_size: float | None = None,
     cex: float = 1.0,
     method: str = "swarm",
     priority: str = "ascending",
@@ -374,17 +376,28 @@ def beeswarm(
     corral_width: float = 0.9,
     random_state: RandomState = None,
 ) -> FloatArray:
-    """Compatibility wrapper returning offsets for one group of values."""
+    """Compatibility wrapper returning offsets for one group of values.
+
+    ``x_size`` and ``y_size`` override the inferred collision-circle diameters.
+    Positions use them to match ggbeeswarm's panel-scale sizing.
+    """
     values_array = _vector(values)
     if side not in (-1, 0, 1):
         raise ValueError("side must be -1, 0, or 1")
-    if not np.isfinite(width) or width <= 0:
-        raise ValueError("width must be positive")
+    if x_size is None:
+        if width is None or not np.isfinite(width) or width <= 0:
+            raise ValueError("width must be positive")
+        x_size = float(width)
+    elif not np.isfinite(x_size) or x_size <= 0:
+        raise ValueError("x_size must be positive")
     if not np.isfinite(cex) or cex <= 0:
         raise ValueError("cex must be positive")
     finite_values = values_array[np.isfinite(values_array)]
     data_span = float(np.ptp(finite_values)) if finite_values.size else 0.0
-    y_size = max(data_span, 1.0) / 100
+    if y_size is None:
+        y_size = max(data_span, 1.0) / 100
+    elif not np.isfinite(y_size) or y_size <= 0:
+        raise ValueError("y_size must be positive")
     if method == "compactswarm":
         compact = True
     elif method == "swarm":
@@ -393,7 +406,7 @@ def beeswarm(
         offsets = _grid_offsets(
             values_array,
             method=method,
-            x_size=float(width),
+            x_size=x_size,
             y_size=y_size,
             cex=float(cex),
             side=side,
@@ -410,7 +423,7 @@ def beeswarm(
     return swarmx(
         np.zeros(values_array.size),
         values_array,
-        x_size=float(width),
+        x_size=x_size,
         y_size=y_size,
         cex=cex,
         side=side,

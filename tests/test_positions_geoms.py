@@ -1,7 +1,9 @@
 import numpy as np
 import pandas as pd
 from plotnine import aes, ggplot
+from sklearn.datasets import load_iris
 
+from p9beeswarm.beeswarm import swarmx
 from p9beeswarm.geoms import geom_beeswarm, geom_quasirandom, geom_sina
 from p9beeswarm.positions import position_beeswarm, position_quasirandom
 from vipor import offsetSingleGroup
@@ -48,6 +50,32 @@ def test_beeswarm_forwards_algorithm_method():
     data = pd.DataFrame({"x": 1, "y": [0.0, 0.0, 0.0]})
     result = position.compute_panel(data, None, position.setup_params(data))
     assert result["x"].nunique() > 1
+
+
+def test_beeswarm_default_uses_panel_scale_sizes_for_documented_iris_example():
+    dataset = load_iris()
+    iris = pd.DataFrame(
+        dataset.data,
+        columns=["Sepal.Length", "Sepal.Width", "Petal.Length", "Petal.Width"],
+    ).assign(Species=[dataset.target_names[index] for index in dataset.target])
+
+    plot = ggplot(iris, aes("Species", "Sepal.Length")) + geom_beeswarm()
+    plot._build()
+    result = plot.layers[0].data
+
+    # ggbeeswarm makes collision circles one-hundredth of the three-category
+    # x scale and the 3.6-unit y scale, rather than using width=0.4.
+    expected = np.empty(len(iris))
+    for center, (_, group) in enumerate(iris.groupby("Species", sort=True), start=1):
+        expected[group.index] = center + swarmx(
+            0,
+            group["Sepal.Length"],
+            x_size=3 / 100,
+            y_size=3.6 / 100,
+        ).x
+
+    assert plot.layers[0].position.params["method"] == "swarm"
+    np.testing.assert_allclose(result["x"], expected)
 
 
 def test_quasirandom_forwards_vipor_parameters_and_varwidth():
