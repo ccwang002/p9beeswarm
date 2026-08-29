@@ -20,9 +20,11 @@ from p9beeswarm import beeswarm
 @pytest.fixture(scope="module")
 def r_beeswarm() -> tuple[Any, Any]:
     try:
-        from rpy2 import robjects
-        from rpy2.robjects import packages
-        from rpy2.robjects.packages import PackageNotInstalledError
+        from rpy2 import robjects  # type: ignore[import-not-found]
+        from rpy2.robjects import packages  # type: ignore[import-not-found]
+        from rpy2.robjects.packages import (  # type: ignore[import-not-found]
+            PackageNotInstalledError,
+        )
     except (ImportError, RuntimeError) as error:
         pytest.skip(f"R and rpy2 are unavailable: {error}")
     try:
@@ -72,7 +74,7 @@ def _assert_matches_swarmx(
 def test_readme_iris_beeswarm_default_and_one_sided(r_beeswarm: tuple[Any, Any]) -> None:
     from sklearn.datasets import load_iris
 
-    dataset = load_iris()
+    dataset: Any = load_iris()
     for values in np.split(dataset.data[:, 0], 3):
         _assert_matches_swarmx(r_beeswarm, values)
         _assert_matches_swarmx(r_beeswarm, values, side=1)

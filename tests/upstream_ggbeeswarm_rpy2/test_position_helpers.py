@@ -15,9 +15,11 @@ from p9beeswarm.positions import get_range
 @pytest.fixture(scope="module")
 def r_ggbeeswarm_helpers() -> Any:
     try:
-        from rpy2 import robjects
-        from rpy2.robjects import packages
-        from rpy2.robjects.packages import PackageNotInstalledError
+        from rpy2 import robjects  # type: ignore[import-not-found]
+        from rpy2.robjects import packages  # type: ignore[import-not-found]
+        from rpy2.robjects.packages import (  # type: ignore[import-not-found]
+            PackageNotInstalledError,
+        )
     except (ImportError, RuntimeError) as error:
         pytest.skip(f"R and rpy2 are unavailable: {error}")
     try:
@@ -39,11 +41,11 @@ def test_get_range_matches_ggbeeswarm(
     if scale_kind == "discrete":
         r_limits = robjects.StrVector(limits)
         r_scale = robjects.r("ggplot2::scale_x_discrete")(limits=r_limits)
-        python_scale = scale_x_discrete(limits=limits)
+        python_scale: Any = scale_x_discrete(limits=limits)
     else:
         r_limits = robjects.FloatVector(limits)
         r_scale = robjects.r("ggplot2::scale_x_continuous")(limits=r_limits)
-        python_scale = scale_x_continuous(limits=limits)
+        python_scale = scale_x_continuous(limits=(float(limits[0]), float(limits[1])))
 
     expected = float(robjects.r("ggbeeswarm:::get_range")(r_scale)[0])
     assert get_range(python_scale) == expected

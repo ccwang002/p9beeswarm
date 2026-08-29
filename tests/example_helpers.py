@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 import numpy as np
 import pandas as pd
 from plotnine import aes, ggplot
@@ -11,7 +13,7 @@ from plotnine.data import mpg
 def iris_data() -> pd.DataFrame:
     from sklearn.datasets import load_iris
 
-    dataset = load_iris()
+    dataset: Any = load_iris()
     return pd.DataFrame(
         dataset.data,
         columns=["Sepal.Length", "Sepal.Width", "Petal.Length", "Petal.Width"],
