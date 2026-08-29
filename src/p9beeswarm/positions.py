@@ -14,6 +14,7 @@ from typing import Any, ClassVar, cast
 import numpy as np
 import pandas as pd  # type: ignore[import-untyped]
 from plotnine.positions.position import position
+from plotnine.scales.scale_continuous import scale_continuous
 from plotnine.scales.scale_discrete import scale_discrete
 
 from .beeswarm import beeswarm, quasirandom, sina
@@ -106,13 +107,23 @@ def _random_generator(random_state: Any) -> Any:
     return np.random.default_rng(random_state)
 
 
-def _scale_range(scale: Any) -> float:
-    """Return the upstream-compatible length of a plotnine position scale."""
+def get_range(scale: Any) -> float:
+    """Return a position scale's upstream-compatible range.
+
+    This mirrors ggbeeswarm's ``get_range`` helper: continuous scales use the
+    difference between their limits, while discrete scales use the number of
+    unique limits. Explicit limits take precedence over trained values, and a
+    zero-length range is normalized to one.
+    """
     if isinstance(scale, scale_discrete):
-        return float(max(len(scale.final_limits), 1))
-    lower, upper = scale.dimension()
-    span = abs(float(upper) - float(lower))
-    return span if span else 1.0
+        limits = scale.final_limits
+        result = len(pd.unique(np.asarray(limits, dtype=object)))
+    elif isinstance(scale, scale_continuous):
+        limits = scale.final_limits
+        result = abs(float(limits[1]) - float(limits[0]))
+    else:
+        raise TypeError(f"unknown position scale type: {type(scale).__name__}")
+    return float(result) if result else 1.0
 
 
 def _data_range(values: pd.Series) -> float:
@@ -137,8 +148,8 @@ def _beeswarm_sizes(
         swarm_range = _data_range(data[swarm_axis])
         value_range = _data_range(data[value_axis])
     else:
-        swarm_range = _scale_range(getattr(scales, swarm_axis))
-        value_range = _scale_range(getattr(scales, value_axis))
+        swarm_range = get_range(getattr(scales, swarm_axis))
+        value_range = get_range(getattr(scales, value_axis))
     width = params["width"]
     x_size = float(width) if width is not None else swarm_range / 100
     return x_size, value_range / 100
