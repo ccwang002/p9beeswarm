@@ -113,5 +113,5 @@ uv run --extra test --extra r-test mypy src/ tests/
 [penguins-figure]: docs/penguins-beeswarm.png
 [examples]: docs/ggbeeswarm-examples.qmd
 [update-readme-figure]: docs/update_readme_figure.py
-[license]: LICENSE
+[license]: COPYING.txt
 [renv-lock]: renv.lock
