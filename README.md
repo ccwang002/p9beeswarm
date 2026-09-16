@@ -123,7 +123,7 @@ uv run --extra test --extra r-test mypy src/ tests/
 [gpl-2]: https://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 [gpl-3]: https://www.gnu.org/licenses/gpl-3.0.html
 
-[penguins-figure]: docs/penguins-beeswarm.png
+[penguins-figure]: https://raw.githubusercontent.com/ccwang002/p9beeswarm/main/docs/penguins-beeswarm.png
 [examples]: docs/ggbeeswarm-examples.qmd
 [update-readme-figure]: docs/update_readme_figure.py
 [license]: LICENSE.txt

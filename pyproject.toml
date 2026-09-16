@@ -9,12 +9,32 @@ description = "Beeswarm, quasirandom, and sina geoms for plotnine"
 readme = "README.md"
 license = "GPL-3.0-or-later"
 license-files = ["LICENSE.txt", "COPYING.txt"]
+authors = [{ name = "Liang-Bo Wang", email = "me@liang2.tw" }]
 requires-python = ">=3.10"
+keywords = ["beeswarm", "plotnine", "quasirandom", "sina plot", "visualization"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Science/Research",
+  "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Scientific/Engineering :: Visualization",
+]
 dependencies = [
   "numpy>=1.23",
   "pandas>=1.5",
   "plotnine>=0.12",
 ]
+
+[project.urls]
+Homepage = "https://github.com/ccwang002/p9beeswarm"
+Repository = "https://github.com/ccwang002/p9beeswarm"
+Issues = "https://github.com/ccwang002/p9beeswarm/issues"
+Changelog = "https://github.com/ccwang002/p9beeswarm/blob/main/CHANGELOG.md"
 
 [project.optional-dependencies]
 test = [
