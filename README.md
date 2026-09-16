@@ -68,8 +68,7 @@ uv run --extra test pytest
 ### Upstream comparison tests
 
 Beyond the core suite, the tests include parity checks against the original R packages.
-These tests use [rpy2][rpy2] to call the upstream R implementations and
-assert that the Python results match numerically:
+These tests use [rpy2][rpy2] to call the upstream R implementations and assert that the Python results match numerically:
 
 ```sh
 uv run --extra test --extra r-test pytest
@@ -85,8 +84,7 @@ Rscript -e 'renv::update(c("beeswarm", "vipor", "ggbeeswarm", "ggplot2"), prompt
 Rscript -e 'renv::snapshot(prompt = FALSE)'
 ```
 
-Review the resulting `renv.lock` diff, run the upstream comparison tests, and
-commit the updated lockfile along with any dependency changes.
+Review the resulting `renv.lock` diff, run the upstream comparison tests, and commit the updated lockfile along with any dependency changes.
 
 ### Type checking
 
@@ -113,5 +111,5 @@ uv run --extra test --extra r-test mypy src/ tests/
 [penguins-figure]: docs/penguins-beeswarm.png
 [examples]: docs/ggbeeswarm-examples.qmd
 [update-readme-figure]: docs/update_readme_figure.py
-[license]: COPYING.txt
+[license]: LICENSE.txt
 [renv-lock]: renv.lock
