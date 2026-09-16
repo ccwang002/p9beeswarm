@@ -39,6 +39,23 @@ If you change the example above, regenerate the image with:
 uv run python docs/update_readme_figure.py
 ```
 
+## Upstream R tools
+
+`p9beeswarm` is heavily inspired by the following upstream R packages. The
+Python implementations and compatibility tests follow their algorithms and
+plotting behavior:
+
+| Package | Contribution | License | Authors |
+| --- | --- | --- | --- |
+| [`beeswarm`](https://CRAN.R-project.org/package=beeswarm) | Core beeswarm point-placement algorithms | [Artistic License 2.0](https://opensource.org/license/artistic-2-0/) | [Aron Eklund and James Trimble](https://cran.r-project.org/web/packages/beeswarm/DESCRIPTION) |
+| [`vipor`](https://CRAN.R-project.org/package=vipor) | Quasirandom and density-based offsets | [GPL (>= 2)](https://www.gnu.org/licenses/old-licenses/gpl-2.0.html) | [Scott Sherrill-Mix and Erik Clarke](https://cran.r-project.org/web/packages/vipor/DESCRIPTION) |
+| [`ggbeeswarm`](https://CRAN.R-project.org/package=ggbeeswarm) | `ggplot2` geoms combining the beeswarm and vipor methods | [GPL (>= 3)](https://www.gnu.org/licenses/gpl-3.0.html) | [Erik Clarke, Scott Sherrill-Mix, and Charlotte Dawson](https://cran.r-project.org/web/packages/ggbeeswarm/DESCRIPTION) |
+
+## License
+
+`p9beeswarm` is licensed under the
+[GNU General Public License, version 3 or later](LICENSE).
+
 ## Testing
 
 The package is managed with [uv](https://docs.astral.sh/uv/). The core test
