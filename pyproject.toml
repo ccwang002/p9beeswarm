@@ -1,6 +1,6 @@
 [build-system]
-requires = ["hatchling>=1.25"]
-build-backend = "hatchling.build"
+requires = ["uv_build>=0.12.15,<0.13"]
+build-backend = "uv_build"
 
 [project]
 name = "p9beeswarm"
@@ -28,8 +28,8 @@ r-test = ["rpy2>=3.5"]
 [dependency-groups]
 lint = ["ruff>=0.16.3"]
 
-[tool.hatch.build.targets.wheel]
-packages = ["src/p9beeswarm", "src/vipor"]
+[tool.uv.build-backend]
+module-name = ["p9beeswarm", "vipor"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
