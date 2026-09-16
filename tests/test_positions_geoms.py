@@ -74,7 +74,7 @@ def test_beeswarm_forwards_algorithm_method():
     assert result["x"].nunique() > 1
 
 
-def test_beeswarm_default_uses_panel_scale_sizes_for_documented_iris_example():
+def test_beeswarm_default_uses_panel_scale_sizes_for_documented_iris_example() -> None:
     dataset: Any = load_iris()
     iris = pd.DataFrame(
         dataset.data,

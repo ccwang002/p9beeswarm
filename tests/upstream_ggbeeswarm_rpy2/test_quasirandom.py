@@ -15,9 +15,11 @@ from p9beeswarm import quasirandom
 @pytest.fixture(scope="module")
 def r_vipor() -> tuple[Any, Any]:
     try:
-        from rpy2 import robjects  # type: ignore[import-not-found]
-        from rpy2.robjects import packages  # type: ignore[import-not-found]
-        from rpy2.robjects.packages import (  # type: ignore[import-not-found]
+        from rpy2 import robjects  # type: ignore[import-not-found, import-untyped]
+        from rpy2.robjects import (  # type: ignore[import-not-found, import-untyped]
+            packages,
+        )
+        from rpy2.robjects.packages import (  # type: ignore[import-not-found, import-untyped]
             PackageNotInstalledError,
         )
     except (ImportError, RuntimeError) as error:
