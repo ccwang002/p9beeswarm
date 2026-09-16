@@ -26,7 +26,7 @@ def r_beeswarm():
 
 def test_swarmx_matches_r_oracle(r_beeswarm):
     r_package, robjects = r_beeswarm
-    from p9beeswarm import swarmx
+    from beeswarm import swarmx
 
     values = np.array([-1.5, -0.8, -0.2, 0.0, 0.1, 0.7, 1.4])
     y_size = np.ptp(values) / 100

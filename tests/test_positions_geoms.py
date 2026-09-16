@@ -6,7 +6,8 @@ from plotnine import aes, ggplot
 from plotnine.scales import scale_x_continuous, scale_x_discrete, scale_y_continuous
 from sklearn.datasets import load_iris
 
-from p9beeswarm.beeswarm import determine_pos, swarmx
+from beeswarm import swarmx
+from beeswarm.core import determine_pos
 from p9beeswarm.geoms import geom_beeswarm, geom_quasirandom, geom_sina
 from p9beeswarm.positions import get_range, position_beeswarm, position_quasirandom
 from vipor import offsetSingleGroup

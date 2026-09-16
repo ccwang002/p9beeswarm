@@ -1,4 +1,4 @@
-"""Beeswarm placement algorithms.
+"""Beeswarm placement algorithms for the standalone ``beeswarm`` package.
 
 The implementation in this module follows :func:`beeswarm::swarmx` rather
 than the (visually similar) jittering algorithms commonly used by plotting

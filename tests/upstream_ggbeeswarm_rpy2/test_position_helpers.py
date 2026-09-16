@@ -8,7 +8,7 @@ import numpy as np
 import pytest
 from plotnine.scales import scale_x_continuous, scale_x_discrete
 
-from p9beeswarm.beeswarm import determine_pos
+from beeswarm.core import determine_pos
 from p9beeswarm.positions import get_range
 
 

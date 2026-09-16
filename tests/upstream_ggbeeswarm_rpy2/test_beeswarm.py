@@ -14,7 +14,7 @@ import numpy as np
 import pytest
 from plotnine.data import mpg
 
-from p9beeswarm import beeswarm
+from beeswarm import beeswarm
 
 
 @pytest.fixture(scope="module")
