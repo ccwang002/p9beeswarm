@@ -7,6 +7,7 @@ name = "p9beeswarm"
 version = "0.1.0"
 description = "Beeswarm, quasirandom, and sina geoms for plotnine"
 readme = "README.md"
+license = "GPL-3.0-or-later"
 requires-python = ">=3.10"
 dependencies = [
   "numpy>=1.23",
