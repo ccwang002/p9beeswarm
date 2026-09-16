@@ -17,7 +17,7 @@ from plotnine.positions.position import position
 from plotnine.scales.scale_continuous import scale_continuous
 from plotnine.scales.scale_discrete import scale_discrete
 
-from .beeswarm import beeswarm, quasirandom, sina
+from beeswarm import beeswarm, quasirandom, sina
 
 
 def _resolution(values: np.ndarray) -> float:

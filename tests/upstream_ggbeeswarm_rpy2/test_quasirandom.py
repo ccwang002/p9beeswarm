@@ -9,7 +9,7 @@ import numpy as np
 import pytest
 from plotnine.data import mpg
 
-from p9beeswarm import quasirandom
+from beeswarm import quasirandom
 
 
 @pytest.fixture(scope="module")

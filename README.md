@@ -1,6 +1,8 @@
 # p9beeswarm
 
 `p9beeswarm` provides beeswarm-style geoms for [plotnine][plotnine], modelled after the R [ggbeeswarm][ggbeeswarm-github] package.
+The distribution also exposes the upstream algorithm compatibility modules as
+`beeswarm` and `vipor`, mirroring the corresponding R packages.
 
 ```python
 import plotnine as p9
@@ -59,7 +61,8 @@ The Python implementations and compatibility tests follow their algorithms and p
 ## Testing
 
 The package is managed with [uv].
-The core test suite covers the swarm layout algorithm, the plotnine position/geom integration, and the `vipor` compatibility module:
+The core test suite covers the `beeswarm` and `vipor` compatibility modules,
+along with the plotnine position/geom integration:
 
 ```sh
 uv run --extra test pytest

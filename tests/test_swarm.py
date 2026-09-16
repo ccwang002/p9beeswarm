@@ -1,6 +1,6 @@
 import numpy as np
 
-from p9beeswarm import beeswarm, quasirandom, sina
+from beeswarm import beeswarm, quasirandom, sina
 from vipor import offsetSingleGroup
 
 

@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from p9beeswarm.beeswarm import beeswarm, quasirandom, sina, swarmx
+from beeswarm import beeswarm, quasirandom, sina, swarmx
 
 
 def test_swarmx_returns_upstream_style_columns_and_checks_collisions():

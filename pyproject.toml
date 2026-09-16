@@ -31,7 +31,7 @@ r-test = ["rpy2>=3.5"]
 lint = ["ruff>=0.16.3"]
 
 [tool.uv.build-backend]
-module-name = ["p9beeswarm", "vipor"]
+module-name = ["beeswarm", "p9beeswarm", "vipor"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
