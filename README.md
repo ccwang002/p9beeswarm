@@ -4,6 +4,18 @@
 The distribution also exposes the upstream algorithm compatibility modules as
 `beeswarm` and `vipor`, mirroring the corresponding R packages.
 
+
+## Installation
+
+Install `p9beeswarm` from PyPI with:
+
+```sh
+python -m pip install p9beeswarm
+```
+
+
+## Usage
+
 ```python
 import plotnine as p9
 from plotnine.data import penguins
