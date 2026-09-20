@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Fixed `vipor.tukeyTexture` (used by `method="tukey"` in `geom_quasirandom`/`geom_beeswarm`) applying its periodic "+2" texture boost only to the first 50 output values instead of to every recycled 50-value cycle, causing the point layout to diverge from R's `vipor::tukeyTexture` for groups larger than 50 observations.
+
 
 
 ## [0.2.1] - 2026-09-15

@@ -84,6 +84,22 @@ def test_tukey_texture() -> None:
     assert np.array_equal(np.max(hollow), 100)
 
 
+@pytest.mark.parametrize("n", [51, 100, 150, 234])
+def test_tukey_texture_recycles_base_pattern_with_boost(n: int) -> None:
+    """Regression test for the base 50-value texture (with its "+2" boost on
+    the 26th-50th values) being recycled as a whole for inputs longer than
+    50, matching R's ``vipor::tukeyTexture`` (``offset[26:50] <- offset[26:50] + 2``
+    applied *before* ``rep(offset, length.out = n)``).
+
+    Previously, ``+2`` was applied only once, to the first 50 output values,
+    so subsequent 50-value cycles were missing the boost.
+    """
+    texture = tukeyTexture(np.arange(n), jitter=False, thin=False, random_state=1)
+    full_cycles = n // 50
+    for cycle in range(1, full_cycles):
+        assert np.array_equal(texture[:50], texture[cycle * 50 : (cycle + 1) * 50])
+
+
 @pytest.mark.parametrize("n", [0, 1, 2, 3, 8])
 def test_tukey_texture_accepts_small_inputs(n: int) -> None:
     assert len(tukeyTexture(np.arange(n), random_state=1)) == n

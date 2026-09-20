@@ -358,8 +358,9 @@ def tukeyTexture(
         delta = float(np.percentile(values, 75) - np.percentile(values, 25)) * 0.03
     order = np.argsort(values, kind="stable")
     sorted_values = values[order]
-    spread = np.resize(tukeyT(random_state=random_state), values.size).astype(float)
-    spread[25:50] += 2
+    base_offset = tukeyT(random_state=random_state).astype(float)
+    base_offset[25:50] += 2
+    spread = np.resize(base_offset, values.size)
     rng = _make_rng(random_state)
     if jitter:
         spread += rng.uniform(-1, 1, size=values.size)
