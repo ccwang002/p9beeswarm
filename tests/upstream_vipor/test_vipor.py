@@ -170,6 +170,57 @@ def test_offsets_match_upstream_r(
     )
 
 
+def test_pseudorandom_offsets_match_upstream_r_distribution(r_vipor: Any) -> None:
+    """``method="pseudorandom"`` draws from R's ``stats::runif``/NumPy's
+    ``Generator.random`` respectively, whose underlying algorithms differ, so
+    individual offsets can't be compared point-for-point across many draws
+    (see ``test_offsets_match_upstream_r`` above). Instead, check that both
+    implementations draw offsets from the same bounded distribution: each
+    offset must stay within `[-point_density, point_density]` (the same
+    density-based scaling used by every method), and, aggregated over many
+    random draws, the mean of all offsets should be close to zero as
+    expected for symmetric uniform noise.
+    """
+    values = np.array([-2, -1.5, -1, -0.2, 0, 0.1, 0.2, 1, 2, 3, 4], dtype=float)
+    r_package, robjects = r_vipor
+    r_y = robjects.FloatVector(values.tolist())
+    num_trials = 300
+
+    r_offset_batches = []
+    for seed in range(num_trials):
+        robjects.r(f"set.seed({seed})")
+        # Force a copy immediately: rpy2's zero-copy array view into R's
+        # memory can be invalidated by the next R call in this loop.
+        r_offset_batches.append(
+            np.array(
+                r_package.offsetSingleGroup(
+                    r_y, method=robjects.StrVector(["pseudorandom"])
+                ),
+                dtype=float,
+                copy=True,
+            )
+        )
+    r_offsets = np.concatenate(r_offset_batches)
+
+    python_offsets = np.concatenate(
+        [
+            offsetSingleGroup(values, method="pseudorandom", random_state=seed)
+            for seed in range(num_trials)
+        ]
+    )
+
+    max_magnitude = 1.0  # (offset - 0.5) * 2 in [-1, 1], point_density <= 1
+    assert np.all(np.abs(r_offsets) <= max_magnitude + 1e-9)
+    assert np.all(np.abs(python_offsets) <= max_magnitude + 1e-9)
+
+    # Mean of many symmetric Uniform(-p, p) draws should be close to zero;
+    # with num_trials * len(values) = 3300 draws the standard error of the
+    # mean is small, so a generous tolerance still catches gross scaling or
+    # sign bugs without being sensitive to which RNG produced the draws.
+    assert r_offsets.mean() == pytest.approx(0.0, abs=0.1)
+    assert python_offsets.mean() == pytest.approx(0.0, abs=0.1)
+
+
 @pytest.mark.parametrize(
     ("values", "nbins", "adjust"),
     [
