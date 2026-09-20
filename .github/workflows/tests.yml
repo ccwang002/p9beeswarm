@@ -58,11 +58,11 @@ jobs:
           enable-cache: true
 
       - name: Install test dependencies
-        run: uv sync --extra test --no-install-project
+        run: uv sync --no-default-groups --group test --no-install-project
 
       - name: Install R test dependencies
         if: matrix.r_tests
-        run: uv sync --extra test --extra r-test --no-install-project
+        run: uv sync --no-default-groups --group test --group r-test --no-install-project
 
       - name: Run tests
         run: ${{ matrix.test_command }}

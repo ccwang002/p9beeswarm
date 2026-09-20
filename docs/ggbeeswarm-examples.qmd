@@ -25,7 +25,7 @@ quarto render docs/ggbeeswarm-examples.qmd
 ```
 
 Rendering requires R packages `ggplot2`, `ggbeeswarm`, and `reticulate`, plus
-the project Python environment created by `uv sync --extra test`.
+the project Python environment created by `uv sync --no-default-groups --group test`.
 
 ```{r}
 #| include: false

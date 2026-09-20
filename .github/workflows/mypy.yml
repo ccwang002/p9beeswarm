@@ -70,7 +70,7 @@ jobs:
           enable-cache: true
 
       - name: Install typing dependencies
-        run: uv sync --extra test --no-install-project
+        run: uv sync --no-default-groups --group test --no-install-project
 
       - name: Run mypy
         run: uv run --no-project mypy src/ tests/
