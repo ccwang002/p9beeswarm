@@ -63,6 +63,25 @@ def test_single_group_offseting() -> None:
         assert len(offsetSingleGroup(values[:2], method=method, random_state=1)) == 2
 
 
+def test_tukey_dense_is_jittered() -> None:
+    """Regression test: ``method="tukeyDense"`` must jitter its texture, like
+    R's ``vipor::tukeyTexture(y)`` (default ``jitter=TRUE``), instead of only
+    recycling the 50 discrete Tukey texture levels verbatim.
+
+    Previously the Python implementation passed ``jitter=method == "tukey"``
+    to ``tukeyTexture``, which evaluates to ``False`` for ``"tukeyDense"``,
+    collapsing what should be near-unique offsets into at most 50 discrete
+    bands for groups larger than 50 observations. Using identical ``y``
+    values pins the point-density scaling factor to a single constant so the
+    banding is not masked by density-driven variation.
+    """
+    values = np.full(200, 5.0)
+    offsets = offsetSingleGroup(values, method="tukeyDense", random_state=1)
+    assert len(np.unique(offsets)) == len(values)
+
+
+
+
 def test_ave_with_args() -> None:
     values = np.arange(1, 11)
     groups = [1, 2, 3, 4, 5] * 2

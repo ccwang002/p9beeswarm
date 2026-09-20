@@ -116,7 +116,7 @@ def offsetSingleGroup(
     else:
         offset = tukeyTexture(
             values,
-            jitter=method == "tukey",
+            jitter=True,
             thin=method == "tukey",
             random_state=random_state,
         ) / 100.0
