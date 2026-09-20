@@ -77,7 +77,7 @@ The core test suite covers the `beeswarm` and `vipor` compatibility modules,
 along with the plotnine position/geom integration:
 
 ```sh
-uv run --extra test pytest
+uv run --no-default-groups --group test pytest
 ```
 
 ### Upstream comparison tests
@@ -86,7 +86,7 @@ Beyond the core suite, the tests include parity checks against the original R pa
 These tests use [rpy2][rpy2] to call the upstream R implementations and assert that the Python results match numerically:
 
 ```sh
-uv run --extra test --extra r-test pytest
+uv run --no-default-groups --group test --group r-test pytest
 ```
 
 The R dependencies are pinned in [`renv.lock`][renv-lock] and restored by the GitHub Actions workflow with `r-lib/actions/setup-renv`.
@@ -106,7 +106,7 @@ Review the resulting `renv.lock` diff, run the upstream comparison tests, and co
 Type-check using [mypy][mypy].
 
 ```sh
-uv run --extra test --extra r-test mypy src/ tests/
+uv run --no-default-groups --group test --group r-test mypy src/ tests/
 ```
 
 [plotnine]: https://plotnine.org/

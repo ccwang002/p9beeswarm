@@ -63,6 +63,25 @@ def test_single_group_offseting() -> None:
         assert len(offsetSingleGroup(values[:2], method=method, random_state=1)) == 2
 
 
+def test_tukey_dense_is_jittered() -> None:
+    """Regression test: ``method="tukeyDense"`` must jitter its texture, like
+    R's ``vipor::tukeyTexture(y)`` (default ``jitter=TRUE``), instead of only
+    recycling the 50 discrete Tukey texture levels verbatim.
+
+    Previously the Python implementation passed ``jitter=method == "tukey"``
+    to ``tukeyTexture``, which evaluates to ``False`` for ``"tukeyDense"``,
+    collapsing what should be near-unique offsets into at most 50 discrete
+    bands for groups larger than 50 observations. Using identical ``y``
+    values pins the point-density scaling factor to a single constant so the
+    banding is not masked by density-driven variation.
+    """
+    values = np.full(200, 5.0)
+    offsets = offsetSingleGroup(values, method="tukeyDense", random_state=1)
+    assert len(np.unique(offsets)) == len(values)
+
+
+
+
 def test_ave_with_args() -> None:
     values = np.arange(1, 11)
     groups = [1, 2, 3, 4, 5] * 2
@@ -124,16 +143,6 @@ def test_vp_plot_returns_x_positions() -> None:
     assert np.allclose(vpPlot(y=values), 1 + offsetX(values))
 
 
-@pytest.fixture(scope="module")
-def r_vipor() -> Any:
-    robjects = pytest.importorskip("rpy2.robjects")
-    packages = pytest.importorskip("rpy2.robjects.packages")
-    try:
-        return packages.importr("vipor"), robjects
-    except packages.PackageNotInstalledError as error:
-        pytest.skip(f"R vipor package is unavailable: {error}")
-
-
 @pytest.mark.parametrize(
     "method",
     ["quasirandom", "pseudorandom", "maxout", "minout", "tukey", "tukeyDense"],
@@ -159,6 +168,57 @@ def test_offsets_match_upstream_r(
     np.testing.assert_allclose(
         actual, expected, rtol=1e-4, atol=1e-4
     )
+
+
+def test_pseudorandom_offsets_match_upstream_r_distribution(r_vipor: Any) -> None:
+    """``method="pseudorandom"`` draws from R's ``stats::runif``/NumPy's
+    ``Generator.random`` respectively, whose underlying algorithms differ, so
+    individual offsets can't be compared point-for-point across many draws
+    (see ``test_offsets_match_upstream_r`` above). Instead, check that both
+    implementations draw offsets from the same bounded distribution: each
+    offset must stay within `[-point_density, point_density]` (the same
+    density-based scaling used by every method), and, aggregated over many
+    random draws, the mean of all offsets should be close to zero as
+    expected for symmetric uniform noise.
+    """
+    values = np.array([-2, -1.5, -1, -0.2, 0, 0.1, 0.2, 1, 2, 3, 4], dtype=float)
+    r_package, robjects = r_vipor
+    r_y = robjects.FloatVector(values.tolist())
+    num_trials = 300
+
+    r_offset_batches = []
+    for seed in range(num_trials):
+        robjects.r(f"set.seed({seed})")
+        # Force a copy immediately: rpy2's zero-copy array view into R's
+        # memory can be invalidated by the next R call in this loop.
+        r_offset_batches.append(
+            np.array(
+                r_package.offsetSingleGroup(
+                    r_y, method=robjects.StrVector(["pseudorandom"])
+                ),
+                dtype=float,
+                copy=True,
+            )
+        )
+    r_offsets = np.concatenate(r_offset_batches)
+
+    python_offsets = np.concatenate(
+        [
+            offsetSingleGroup(values, method="pseudorandom", random_state=seed)
+            for seed in range(num_trials)
+        ]
+    )
+
+    max_magnitude = 1.0  # (offset - 0.5) * 2 in [-1, 1], point_density <= 1
+    assert np.all(np.abs(r_offsets) <= max_magnitude + 1e-9)
+    assert np.all(np.abs(python_offsets) <= max_magnitude + 1e-9)
+
+    # Mean of many symmetric Uniform(-p, p) draws should be close to zero;
+    # with num_trials * len(values) = 3300 draws the standard error of the
+    # mean is small, so a generous tolerance still catches gross scaling or
+    # sign bugs without being sensitive to which RNG produced the draws.
+    assert r_offsets.mean() == pytest.approx(0.0, abs=0.1)
+    assert python_offsets.mean() == pytest.approx(0.0, abs=0.1)
 
 
 @pytest.mark.parametrize(
