@@ -43,6 +43,7 @@ Changelog = "https://github.com/ccwang002/p9beeswarm/blob/main/CHANGELOG.md"
 dev = [
     {include-group = "lint"},
     {include-group = "test"},
+    {include-group = "r-test"},
     "ipywidgets>=8.1.9",
     "notebook>=7.6.2",
 ]
@@ -54,8 +55,8 @@ test = [
     "scikit-learn>=1.3",
     "scikit-learn-stubs>=0.0.3",
 ]
-lint = ["ruff>=0.16.3"]
 r-test = ["rpy2>=3.5"]
+lint = ["ruff>=0.16.3"]
 
 [tool.uv.build-backend]
 module-name = ["beeswarm", "p9beeswarm", "vipor"]
