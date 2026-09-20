@@ -77,6 +77,9 @@ corral = pd.DataFrame({"y": corral_rng.normal(size=1000), "id": corral_rng.choic
 
 print(ggplot(iris, aes(Species, Sepal.Length)) + geom_jitter())
 ```
+:::
+
+::: {layout-ncol=2}
 ```{python Python: quasirandom}
 #| fig-cap: "Python: quasirandom"
 
@@ -104,6 +107,9 @@ print(ggplot(iris, aes(Species, Sepal.Length)) + geom_quasirandom())
 
 print(ggplot(mpg, aes(class, hwy)) + geom_quasirandom())
 ```
+:::
+
+::: {layout-ncol=2}
 ```{python Python: horizontal geom_quasirandom}
 #| fig-cap: "Python: horizontal geom_quasirandom"
 
@@ -114,6 +120,9 @@ print(ggplot(mpg, aes(class, hwy)) + geom_quasirandom())
 
 print(ggplot(mpg, aes(hwy, class)) + geom_quasirandom(groupOnX = FALSE))
 ```
+:::
+
+::: {layout-ncol=2}
 ```{python Python: varwidth geom_quasirandom}
 #| fig-cap: "Python: varwidth geom_quasirandom"
 
@@ -124,6 +133,9 @@ print(ggplot(mpg, aes(hwy, class)) + geom_quasirandom(groupOnX = FALSE))
 
 print(ggplot(mpg, aes(class, hwy)) + geom_quasirandom(varwidth = TRUE))
 ```
+:::
+
+::: {layout-ncol=2}
 ```{python Python: dodged geom_quasirandom}
 #| fig-cap: "Python: dodged geom_quasirandom"
 
@@ -149,6 +161,9 @@ print(ggplot(sub_mpg, aes(class, displ, color = factor(cyl))) + geom_quasirandom
 
 print(ggplot(iris, aes(Species, Sepal.Length)) + geom_quasirandom(method = "tukey") + ggtitle("tukey"))
 ```
+:::
+
+::: {layout-ncol=2}
 ```{python Python: Tukey density}
 #| fig-cap: "Python: Tukey density"
 
@@ -159,6 +174,9 @@ print(ggplot(iris, aes(Species, Sepal.Length)) + geom_quasirandom(method = "tuke
 
 print(ggplot(iris, aes(Species, Sepal.Length)) + geom_quasirandom(method = "tukeyDense") + ggtitle("tukeyDense"))
 ```
+:::
+
+::: {layout-ncol=2}
 ```{python Python: frowney quasirandom}
 #| fig-cap: "Python: frowney quasirandom"
 
@@ -169,6 +187,9 @@ print(ggplot(iris, aes(Species, Sepal.Length)) + geom_quasirandom(method = "tuke
 
 print(ggplot(iris, aes(Species, Sepal.Length)) + geom_quasirandom(method = "frowney") + ggtitle("frowney"))
 ```
+:::
+
+::: {layout-ncol=2}
 ```{python Python: smiley quasirandom}
 #| fig-cap: "Python: smiley quasirandom"
 
@@ -179,6 +200,9 @@ print(ggplot(iris, aes(Species, Sepal.Length)) + geom_quasirandom(method = "frow
 
 print(ggplot(iris, aes(Species, Sepal.Length)) + geom_quasirandom(method = "smiley") + ggtitle("smiley"))
 ```
+:::
+
+::: {layout-ncol=2}
 ```{python Python: pseudorandom quasirandom}
 #| fig-cap: "Python: pseudorandom quasirandom"
 
@@ -206,6 +230,9 @@ print(ggplot(iris, aes(Species, Sepal.Length)) + geom_quasirandom(method = "pseu
 
 print(ggplot(iris, aes(Species, Sepal.Length)) + geom_beeswarm())
 ```
+:::
+
+::: {layout-ncol=2}
 ```{python Python: one-sided geom_beeswarm}
 #| fig-cap: "Python: one-sided geom_beeswarm"
 
@@ -216,6 +243,9 @@ print(ggplot(iris, aes(Species, Sepal.Length)) + geom_beeswarm())
 
 print(ggplot(iris, aes(Species, Sepal.Length)) + geom_beeswarm(side = 1L))
 ```
+:::
+
+::: {layout-ncol=2}
 ```{python Python: vertical geom_beeswarm}
 #| fig-cap: "Python: vertical geom_beeswarm"
 
@@ -226,6 +256,9 @@ print(ggplot(iris, aes(Species, Sepal.Length)) + geom_beeswarm(side = 1L))
 
 print(ggplot(mpg, aes(class, hwy)) + geom_beeswarm(size = .5))
 ```
+:::
+
+::: {layout-ncol=2}
 ```{python Python: horizontal geom_beeswarm}
 #| fig-cap: "Python: horizontal geom_beeswarm"
 
@@ -236,6 +269,9 @@ print(ggplot(mpg, aes(class, hwy)) + geom_beeswarm(size = .5))
 
 print(ggplot(mpg, aes(hwy, class)) + geom_beeswarm(size = .5))
 ```
+:::
+
+::: {layout-ncol=2}
 ```{python Python: expanded horizontal geom_beeswarm}
 #| fig-cap: "Python: expanded horizontal geom_beeswarm"
 
@@ -246,6 +282,9 @@ print(ggplot(mpg, aes(hwy, class)) + geom_beeswarm(size = .5))
 
 print(ggplot(mpg, aes(hwy, class)) + geom_beeswarm(size = .5) + scale_y_discrete(expand = expansion(add = c(.5, 1))))
 ```
+:::
+
+::: {layout-ncol=2}
 ```{python Python: large-point geom_beeswarm}
 #| fig-cap: "Python: large-point geom_beeswarm"
 
@@ -256,6 +295,9 @@ print(ggplot(mpg, aes(hwy, class)) + geom_beeswarm(size = .5) + scale_y_discrete
 
 print(ggplot(mpg, aes(class, hwy)) + geom_beeswarm(size = 1.1))
 ```
+:::
+
+::: {layout-ncol=2}
 ```{python Python: dodged geom_beeswarm}
 #| fig-cap: "Python: dodged geom_beeswarm"
 
@@ -281,6 +323,9 @@ print(ggplot(sub_mpg, aes(class, displ, color = factor(cyl))) + geom_beeswarm(do
 
 print(ggplot(alternative, aes(x, y)) + geom_beeswarm(cex = 2.5, method = "swarm") + ggtitle("swarm"))
 ```
+:::
+
+::: {layout-ncol=2}
 ```{python Python: compactswarm method}
 #| fig-cap: "Python: compactswarm method"
 
@@ -291,6 +336,9 @@ print(ggplot(alternative, aes(x, y)) + geom_beeswarm(cex = 2.5, method = "swarm"
 
 print(ggplot(alternative, aes(x, y)) + geom_beeswarm(cex = 2.5, method = "compactswarm") + ggtitle("compactswarm"))
 ```
+:::
+
+::: {layout-ncol=2}
 ```{python Python: hex method}
 #| fig-cap: "Python: hex method"
 
@@ -301,6 +349,9 @@ print(ggplot(alternative, aes(x, y)) + geom_beeswarm(cex = 2.5, method = "compac
 
 print(ggplot(alternative, aes(x, y)) + geom_beeswarm(cex = 2.5, method = "hex") + ggtitle("hex"))
 ```
+:::
+
+::: {layout-ncol=2}
 ```{python Python: square method}
 #| fig-cap: "Python: square method"
 
@@ -311,6 +362,9 @@ print(ggplot(alternative, aes(x, y)) + geom_beeswarm(cex = 2.5, method = "hex") 
 
 print(ggplot(alternative, aes(x, y)) + geom_beeswarm(cex = 2.5, method = "square") + ggtitle("square"))
 ```
+:::
+
+::: {layout-ncol=2}
 ```{python Python: center method}
 #| fig-cap: "Python: center method"
 
@@ -321,6 +375,9 @@ print(ggplot(alternative, aes(x, y)) + geom_beeswarm(cex = 2.5, method = "square
 
 print(ggplot(alternative, aes(x, y)) + geom_beeswarm(cex = 2.5, method = "center") + ggtitle("center"))
 ```
+:::
+
+::: {layout-ncol=2}
 ```{python Python: ascending priority}
 #| fig-cap: "Python: ascending priority"
 
@@ -331,6 +388,9 @@ print(ggplot(alternative, aes(x, y)) + geom_beeswarm(cex = 2.5, method = "center
 
 print(ggplot(priority, aes(x, y)) + geom_beeswarm(cex = 2, priority = "ascending") + ggtitle("ascending") + scale_x_continuous(expand = expansion(add = c(.5, .5))))
 ```
+:::
+
+::: {layout-ncol=2}
 ```{python Python: descending priority}
 #| fig-cap: "Python: descending priority"
 
@@ -341,6 +401,9 @@ print(ggplot(priority, aes(x, y)) + geom_beeswarm(cex = 2, priority = "ascending
 
 print(ggplot(priority, aes(x, y)) + geom_beeswarm(cex = 2, priority = "descending") + ggtitle("descending") + scale_x_continuous(expand = expansion(add = c(.5, .5))))
 ```
+:::
+
+::: {layout-ncol=2}
 ```{python Python: density priority}
 #| fig-cap: "Python: density priority"
 
@@ -351,6 +414,9 @@ print(ggplot(priority, aes(x, y)) + geom_beeswarm(cex = 2, priority = "descendin
 
 print(ggplot(priority, aes(x, y)) + geom_beeswarm(cex = 2, priority = "density") + ggtitle("density") + scale_x_continuous(expand = expansion(add = c(.5, .5))))
 ```
+:::
+
+::: {layout-ncol=2}
 ```{python Python: random priority}
 #| fig-cap: "Python: random priority"
 
@@ -376,6 +442,9 @@ print(ggplot(priority, aes(x, y)) + geom_beeswarm(cex = 2, priority = "random") 
 
 print(ggplot(corral, aes(id, y, colour = id)) + geom_beeswarm(cex = 2.5, corral = "none", corral.width = .9) + ggtitle("none"))
 ```
+:::
+
+::: {layout-ncol=2}
 ```{python Python: gutter corralling}
 #| fig-cap: "Python: gutter corralling"
 
@@ -386,6 +455,9 @@ print(ggplot(corral, aes(id, y, colour = id)) + geom_beeswarm(cex = 2.5, corral 
 
 print(ggplot(corral, aes(id, y, colour = id)) + geom_beeswarm(cex = 2.5, corral = "gutter", corral.width = .9) + ggtitle("gutter"))
 ```
+:::
+
+::: {layout-ncol=2}
 ```{python Python: wrapped corralling}
 #| fig-cap: "Python: wrapped corralling"
 
@@ -396,6 +468,9 @@ print(ggplot(corral, aes(id, y, colour = id)) + geom_beeswarm(cex = 2.5, corral 
 
 print(ggplot(corral, aes(id, y, colour = id)) + geom_beeswarm(cex = 2.5, corral = "wrap", corral.width = .9) + ggtitle("wrap"))
 ```
+:::
+
+::: {layout-ncol=2}
 ```{python Python: random corralling}
 #| fig-cap: "Python: random corralling"
 
@@ -406,6 +481,9 @@ print(ggplot(corral, aes(id, y, colour = id)) + geom_beeswarm(cex = 2.5, corral 
 
 print(ggplot(corral, aes(id, y, colour = id)) + geom_beeswarm(cex = 2.5, corral = "random", corral.width = .9) + ggtitle("random"))
 ```
+:::
+
+::: {layout-ncol=2}
 ```{python Python: omitted corralling}
 #| fig-cap: "Python: omitted corralling"
 
