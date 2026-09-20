@@ -143,16 +143,6 @@ def test_vp_plot_returns_x_positions() -> None:
     assert np.allclose(vpPlot(y=values), 1 + offsetX(values))
 
 
-@pytest.fixture(scope="module")
-def r_vipor() -> Any:
-    robjects = pytest.importorskip("rpy2.robjects")
-    packages = pytest.importorskip("rpy2.robjects.packages")
-    try:
-        return packages.importr("vipor"), robjects
-    except packages.PackageNotInstalledError as error:
-        pytest.skip(f"R vipor package is unavailable: {error}")
-
-
 @pytest.mark.parametrize(
     "method",
     ["quasirandom", "pseudorandom", "maxout", "minout", "tukey", "tukeyDense"],
