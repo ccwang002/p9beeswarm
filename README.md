@@ -34,9 +34,11 @@ from plotnine.data import penguins
 from p9beeswarm import geom_quasirandom
 
 penguins_plot = (
-    p9.ggplot(penguins.dropna(subset=["species", "body_mass_g"]),
-              p9.aes("species", "body_mass_g", color="species"))
-    + geom_quasirandom(width=0.35)
+    p9.ggplot(
+        penguins,
+        p9.aes(x="species", y="body_mass_g", color="species"),
+    )
+    + geom_quasirandom()
     + p9.labs(
         title="Penguin body mass by species",
         x="Species",

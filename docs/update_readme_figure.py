@@ -20,12 +20,12 @@ OUTPUT = REPO_ROOT / "docs" / "penguins-beeswarm.png"
 
 
 def build_plot() -> p9.ggplot:
-    return (
+    penguins_plot = (
         p9.ggplot(
-            penguins.dropna(subset=["species", "body_mass_g"]),
-            p9.aes("species", "body_mass_g", color="species"),
+            penguins,
+            p9.aes(x="species", y="body_mass_g", color="species"),
         )
-        + geom_quasirandom(width=0.35)
+        + geom_quasirandom()
         + p9.labs(
             title="Penguin body mass by species",
             x="Species",
@@ -33,11 +33,12 @@ def build_plot() -> p9.ggplot:
         )
         + p9.theme_bw()
     )
+    return penguins_plot
 
 
 def main() -> None:
     plot = build_plot()
-    plot.save(OUTPUT, width=6, height=4, dpi=150, verbose=False)
+    plot.save(OUTPUT, width=6, height=4, dpi=300, verbose=False)
     print(f"Wrote {OUTPUT}")
 
 

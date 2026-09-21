@@ -3,3 +3,5 @@
 /docs/ggbeeswarm-examples.log
 /docs/ggbeeswarm-examples.tex
 /docs/ggbeeswarm-examples_files/
+/.quarto/
+**/*.quarto_ipynb
