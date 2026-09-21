@@ -148,7 +148,3 @@ uv run --no-default-groups --group test --group r-test mypy src/ tests/
 [update-readme-figure]: docs/update_readme_figure.py
 [license]: LICENSE.txt
 [renv-lock]: renv.lock
-[geom-beeswarm-source]: src/p9beeswarm/geoms.py
-[positions-source]: src/p9beeswarm/positions.py
-[beeswarm-source]: src/beeswarm/core.py
-[vipor-source]: src/vipor/core.py
