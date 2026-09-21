@@ -53,6 +53,28 @@ uv run python docs/update_readme_figure.py
 ```
 
 
+## Implementations and reproducibility
+
+The table below records the Python implementation and its upstream R implementation.
+“100% reproducible” means that repeated builds with the same data and parameters do
+not draw random numbers. Methods marked as random can still be made reproducible in
+Python by passing a fixed `random_state`; without one, their point positions may
+change between builds.
+
+| Plotnine API / method | Upstream R implementation | 100% reproducible? | Notes |
+| --- | --- | :---: | --- |
+| `geom_quasirandom(method="quasirandom")` | `ggbeeswarm::geom_quasirandom` → `vipor::offsetX` / `vipor::offsetSingleGroup` | Yes | Uses the deterministic van der Corput sequence. This is the default quasirandom method. |
+| `geom_quasirandom(method="maxout" / "minout"; aliases "smiley" / "frowney")` | `ggbeeswarm::geom_quasirandom` → `vipor::offsetX` / `vipor::offsetSingleGroup` | Yes | Density and alternating extreme placement do not use random draws. |
+| `geom_quasirandom(method="pseudorandom")` | `ggbeeswarm::geom_quasirandom` → `vipor::offsetX` / `vipor::offsetSingleGroup` | No (unless seeded) | Explicitly generates random offsets; pass `random_state` for repeatable Python plots. |
+| `geom_quasirandom(method="tukey" / "tukeyDense")` | `ggbeeswarm::geom_quasirandom` → `vipor::offsetX` / `vipor::tukeyTexture` | No (unless seeded) | Tukey texture generates random permutations and jitter; pass `random_state` for repeatable Python plots. |
+| `geom_beeswarm(method="swarm")` | `ggbeeswarm::geom_beeswarm` → `beeswarm::swarmx` | Yes* | The default `priority="ascending"` and `corral="none"` are deterministic. `priority="random"` or `corral="random"` introduces randomness. |
+| `geom_beeswarm(method="compactswarm")` | `ggbeeswarm::geom_beeswarm` → `beeswarm::swarmx(compact=TRUE)` | Yes* | Same `priority` and `corral` caveat as `swarm`. |
+| `geom_beeswarm(method="center" / "square" / "hex")` | `ggbeeswarm::geom_beeswarm` internal grid placement (`center`, `square`, or `hex`) | Yes* | Grid placement is deterministic; `corral="random"` is the exception. |
+
+*The beeswarm rows are deterministic with their default options. Any method that
+uses a random priority or corral is not 100% reproducible unless a seed is supplied.
+
+
 ## Upstream R tools
 
 `p9beeswarm` is heavily inspired by the following upstream R packages.
@@ -128,3 +150,7 @@ uv run --no-default-groups --group test --group r-test mypy src/ tests/
 [update-readme-figure]: docs/update_readme_figure.py
 [license]: LICENSE.txt
 [renv-lock]: renv.lock
+[geom-beeswarm-source]: src/p9beeswarm/geoms.py
+[positions-source]: src/p9beeswarm/positions.py
+[beeswarm-source]: src/beeswarm/core.py
+[vipor-source]: src/vipor/core.py
