@@ -4,7 +4,7 @@ build-backend = "uv_build"
 
 [project]
 name = "p9beeswarm"
-version = "0.2.1"
+version = "0.3.0"
 description = "Beeswarm and quasirandom geoms for plotnine"
 readme = "README.md"
 license = "GPL-3.0-or-later"
