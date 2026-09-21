@@ -7,7 +7,6 @@ from typing import Any
 from plotnine.geoms.geom_point import geom_point
 
 from .positions import (
-    _SinaPosition,
     position_beeswarm,
     position_quasirandom,
 )
@@ -111,44 +110,4 @@ class geom_quasirandom(geom_point):
         )
 
 
-class geom_sina(geom_point):
-    """Draw points with offsets scaled by their local distribution density."""
-
-    def __init__(
-        self,
-        mapping=None,
-        data=None,
-        *,
-        stat: Any = "identity",
-        position: Any = "identity",
-        na_rm: bool = False,
-        width: float | None = 0.4,
-        maxwidth: float = 1.0,
-        method: str = "density",
-        dodge_width: float | None = 0.0,
-        group_on_x: bool | None = None,
-        orientation: str | None = None,
-        random_state: Any = None,
-        **kwargs: Any,
-    ):
-        if _use_default_position(position):
-            position = _SinaPosition(
-                width=width,
-                maxwidth=maxwidth,
-                method=method,
-                dodge_width=dodge_width,
-                group_on_x=group_on_x,
-                orientation=orientation,
-                random_state=random_state,
-            )
-        super().__init__(
-            mapping=mapping,
-            data=data,
-            stat=stat,
-            position=position,
-            na_rm=na_rm,
-            **kwargs,
-        )
-
-
-__all__ = ["geom_beeswarm", "geom_quasirandom", "geom_sina"]
+__all__ = ["geom_beeswarm", "geom_quasirandom"]

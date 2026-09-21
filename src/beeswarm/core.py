@@ -467,16 +467,4 @@ def quasirandom(
     return result
 
 
-def sina(values: ArrayLike, *, width: float = 0.4, maxwidth: float = 1.0, random_state: RandomState = None) -> FloatArray:
-    """Return density-scaled offsets for a sina plot."""
-    values_array = _vector(values)
-    result = quasirandom(values_array, width=width, random_state=random_state)
-    finite = np.isfinite(values_array)
-    if finite.any():
-        ranks = np.argsort(np.argsort(values_array[finite], kind="stable"), kind="stable")
-        density = 1 - np.abs(2 * ranks / max(len(ranks) - 1, 1) - 1)
-        result[finite] *= maxwidth * (0.25 + 0.75 * density)
-    return result
-
-
-__all__ = ["SwarmResult", "beeswarm", "quasirandom", "sina", "swarmx"]
+__all__ = ["SwarmResult", "beeswarm", "quasirandom", "swarmx"]

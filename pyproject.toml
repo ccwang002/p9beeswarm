@@ -5,13 +5,13 @@ build-backend = "uv_build"
 [project]
 name = "p9beeswarm"
 version = "0.2.1"
-description = "Beeswarm, quasirandom, and sina geoms for plotnine"
+description = "Beeswarm and quasirandom geoms for plotnine"
 readme = "README.md"
 license = "GPL-3.0-or-later"
 license-files = ["LICENSE.txt", "COPYING.txt"]
 authors = [{ name = "Liang-Bo Wang", email = "me@liang2.tw" }]
 requires-python = ">=3.10"
-keywords = ["beeswarm", "plotnine", "quasirandom", "sina plot", "visualization"]
+keywords = ["beeswarm", "plotnine", "quasirandom", "visualization"]
 classifiers = [
   "Development Status :: 4 - Beta",
   "Intended Audience :: Science/Research",

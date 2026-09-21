@@ -8,7 +8,7 @@ from sklearn.datasets import load_iris
 
 from beeswarm import swarmx
 from beeswarm.core import determine_pos
-from p9beeswarm.geoms import geom_beeswarm, geom_quasirandom, geom_sina
+from p9beeswarm.geoms import geom_beeswarm, geom_quasirandom
 from p9beeswarm.positions import get_range, position_beeswarm, position_quasirandom
 from vipor import offsetSingleGroup
 
@@ -136,7 +136,6 @@ def test_geoms_use_matching_position_objects_and_build():
     for geom, position_name in (
         (geom_beeswarm(), "position_beeswarm"),
         (geom_quasirandom(varwidth=True), "position_quasirandom"),
-        (geom_sina(), "_SinaPosition"),
     ):
         assert type(geom._position).__name__ == position_name
         plot = ggplot(_data(), aes("x", "y")) + geom
