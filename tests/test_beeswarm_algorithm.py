@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from beeswarm import beeswarm, quasirandom, sina, swarmx
+from beeswarm import beeswarm, quasirandom, swarmx
 
 
 def test_swarmx_returns_upstream_style_columns_and_checks_collisions():
@@ -58,7 +58,6 @@ def test_beeswarm_methods_and_vipor_helpers():
     np.testing.assert_allclose(centered[:2], [-0.2, 0.2])
     assert np.isnan(centered[-1])
     assert np.isnan(quasirandom(values)[-1])
-    assert np.isnan(sina(values)[-1])
 
 
 def test_invalid_swarm_arguments_fail_loudly():

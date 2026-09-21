@@ -1,6 +1,6 @@
 import numpy as np
 
-from beeswarm import beeswarm, quasirandom, sina
+from beeswarm import beeswarm, quasirandom
 from vipor import offsetSingleGroup
 
 
@@ -17,12 +17,6 @@ def test_quasirandom_is_bounded_and_reproducible():
     offsets = quasirandom(values)
     assert np.max(np.abs(offsets)) <= 0.4
     assert np.array_equal(offsets, quasirandom(values))
-
-
-def test_sina_scales_offsets():
-    offsets = sina(np.arange(20))
-    assert np.max(np.abs(offsets)) <= 0.4
-    assert len(offsets) == 20
 
 
 def test_quasirandom_distribution_methods_are_distinct():

@@ -17,7 +17,7 @@ from plotnine.positions.position import position
 from plotnine.scales.scale_continuous import scale_continuous
 from plotnine.scales.scale_discrete import scale_discrete
 
-from beeswarm import beeswarm, quasirandom, sina
+from beeswarm import beeswarm, quasirandom
 
 
 def _resolution(values: np.ndarray) -> float:
@@ -216,13 +216,6 @@ def _position_swarm(
                 x_size=x_size,
                 y_size=y_size,
             )
-        elif algorithm == "sina":
-            offsets = sina(
-                values,
-                width=width,
-                maxwidth=params["maxwidth"],
-                random_state=rng,
-            )
         else:
             offsets = quasirandom(
                 values,
@@ -313,32 +306,6 @@ class position_quasirandom(_SwarmPosition):
             "group_on_x": group_on_x,
             "orientation": orientation,
             "max_length": max_length,
-            "random_state": random_state,
-        }
-
-
-class _SinaPosition(_SwarmPosition):
-    """Private position used by geom_sina with the shared pipeline."""
-
-    algorithm: ClassVar[str] = "sina"
-
-    def __init__(
-        self,
-        width: float | None = 0.4,
-        maxwidth: float = 1.0,
-        method: str = "density",
-        dodge_width: float | None = 0.0,
-        group_on_x: bool | None = None,
-        orientation: str | None = None,
-        random_state: Any = None,
-    ):
-        self.params = {
-            "width": width,
-            "maxwidth": maxwidth,
-            "method": method,
-            "dodge_width": dodge_width,
-            "group_on_x": group_on_x,
-            "orientation": orientation,
             "random_state": random_state,
         }
 

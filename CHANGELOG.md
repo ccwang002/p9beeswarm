@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Removed
+
+- Removed `geom_sina`/`position_sina` and the `beeswarm.sina` helper. The bundled sina-plot algorithm did not correspond to any upstream R package (neither `beeswarm`/`vipor`/`ggbeeswarm` nor `ggforce`, which is what plotnine's own `stat_sina`/`geom_sina` port) and produced different point placement. Use plotnine's built-in [`geom_sina`](https://plotnine.org) instead, which already matches the R `ggforce::geom_sina` implementation.
+
 ### Fixed
 
 - Fixed `vipor.tukeyTexture` (used by `method="tukey"` in `geom_quasirandom`/`geom_beeswarm`) applying its periodic "+2" texture boost only to the first 50 output values instead of to every recycled 50-value cycle, causing the point layout to diverge from R's `vipor::tukeyTexture` for groups larger than 50 observations.
